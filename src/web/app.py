@@ -30,6 +30,15 @@ app.register_blueprint(oauth_bp)
 
 app.secret_key = os.environ.get('SECRET_KEY', 'default_fallback_secret_key')  # Change this to a random secret key
 
+def create_jwt_token(user_id, secret_key):
+    payload = {
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=5),
+        'iat': datetime.datetime.utcnow(),
+        'sub': str(user_id),
+    }
+    token = jwt.encode(payload, secret_key, algorithm='HS256')
+    return token
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -66,130 +75,51 @@ def finalize_registration_google():
     resp = google.get("/oauth2/v2/userinfo")
     if resp.ok:
         user_info = resp.json()
-        # Log the user info for debugging purposes
-        print(user_info)
-        
-        # Payload for JWT with an expiration time of 5 minutes
-        payload = {
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=5),
-            'iat': datetime.datetime.utcnow(),
-            'sub': str(user_info['id']),  # Subject is the user's ID
+        token = create_jwt_token(user_info['id'], app.secret_key)
+        oidc_token = {
+            'user_info': user_info,
+            'jwt_token': token
         }
-        # Encode the payload to create the JWT token
-        token = jwt.encode(payload, app.secret_key, algorithm='HS256')
-        flash(f"Google: Logged in as: {user_info['name']} (Email: {user_info['email']})")
+        return render_template('finalize_registration.html', oidc_token=oidc_token)
     else:
         flash("Failed to fetch user details from Google.")
-    # Implement any specific logic for Google OAuth finalization here
-    return render_template('finalize_registration.html', oidc_token="Your Google OIDC Token Here")
+        return redirect(url_for('authorize.authorize', provider_name='google'))
+
 
 @app.route('/finalize-registration/github')
 def finalize_registration_github():
-    # Similar implementation for GitHub
     if not github.authorized:
         return redirect(url_for('authorize.authorize', provider_name='github'))
     resp = github.get("/user")
     if resp.ok:
         user_info = resp.json()
-        # Log the user info for debugging purposes
-        print(user_info)
-        
-        # Payload for JWT with an expiration time of 5 minutes
-        payload = {
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=5),
-            'iat': datetime.datetime.utcnow(),
-            'sub': str(user_info['id']),  # Subject is the user's ID
+        token = create_jwt_token(user_info['id'], app.secret_key)
+        oidc_token = {
+            'user_info': user_info,
+            'jwt_token': token
         }
-        # Encode the payload to create the JWT token
-        token = jwt.encode(payload, app.secret_key, algorithm='HS256')
-        flash(f"GitHub: Logged in as: {user_info['login']} (ID: {user_info['id']})")
+        return render_template('finalize_registration.html', oidc_token=oidc_token)
     else:
         flash("Failed to fetch user details from GitHub.")
-    return render_template('finalize_registration.html', oidc_token="Your GitHub OIDC Token Here")
+        return redirect(url_for('authorize.authorize', provider_name='github'))
+
 
 @app.route('/finalize-registration/discord')
 def finalize_registration_discord():
-    # And for Discord
     if not discord.authorized:
         return redirect(url_for('authorize.authorize', provider_name='discord'))
     resp = discord.get("/api/users/@me")
     if resp.ok:
         user_info = resp.json()
-        # Log the user info for debugging purposes
-        print(user_info)
-        
-        # Payload for JWT with an expiration time of 5 minutes
-        payload = {
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=5),
-            'iat': datetime.datetime.utcnow(),
-            'sub': str(user_info['id']),  # Subject is the user's ID
-        }
-        # Encode the payload to create the JWT token
-        token = jwt.encode(payload, app.secret_key, algorithm='HS256')
-        # wrap both the user info and the token in a object
+        token = create_jwt_token(user_info['id'], app.secret_key)
         oidc_token = {
             'user_info': user_info,
             'jwt_token': token
         }
-        # Provide feedback to the user and return the JWT token
-        flash(f"Discord: Logged in as: {user_info['username']}# {user_info['discriminator']} (ID: {user_info['id']})")
         return render_template('finalize_registration.html', oidc_token=oidc_token)
     else:
         flash("Failed to fetch user details from Discord.")
         return redirect(url_for('authorize.authorize', provider_name='discord'))
-
-@app.route('/finalize-registration')
-def finalize_registration():
-    provider_name = session.get('oauth_provider')
-    print(provider_name)
-    user_info = None
-    
-    # Handling Google OAuth
-    if provider_name == 'google':
-        if not google.authorized:
-            return redirect(url_for('authorize.authorize', provider_name='google'))
-        
-        resp = google.get("/oauth2/v2/userinfo")
-        if resp.ok:
-            user_info = resp.json()
-            print(user_info)  # Console log the user info
-            flash(f"Google: Logged in as: {user_info['name']} (Email: {user_info['email']})")
-        else:
-            flash("Failed to fetch user details from Google.")
-
-    # Handling GitHub OAuth
-    elif provider_name == 'github':
-        if not github.authorized:
-            return redirect(url_for('authorize.authorize', provider_name='github'))
-        
-        resp = github.get("/user")
-        if resp.ok:
-            user_info = resp.json()
-            print(user_info)  # Console log the user info
-            flash(f"GitHub: Logged in as: {user_info['login']} (ID: {user_info['id']})")
-        else:
-            flash("Failed to fetch user details from GitHub.")
-
-    # Handling Discord OAuth
-    elif provider_name == 'discord':
-        if not discord.authorized:
-            flash("You are not authorized via Discord. Please try again.")
-            return redirect(url_for('authorize.authorize', provider_name='discord'))
-        
-        resp = discord.get("/api/users/@me")
-        if resp.ok:
-            user_info = resp.json()
-            print(user_info)  # Console log the user info
-            flash(f"Discord: Logged in as: {user_info['username']}# {user_info['discriminator']} (ID: {user_info['id']})")
-        else:
-            flash("Failed to fetch user details from Discord.")
-
-    else:
-        flash("Invalid OAuth provider.")
-        
-    oidc_token = "extracted_from_user_info_or_elsewhere"
-
-    return render_template('finalize_registration.html', oidc_token=oidc_token)
 
 @app.route('/issue-identity', methods=['GET', 'POST'])
 def issue_identity_route():
