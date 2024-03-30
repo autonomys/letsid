@@ -1,3 +1,4 @@
+# setup.py
 from setuptools import setup, find_packages
 
 setup(
@@ -11,11 +12,12 @@ setup(
     url='https://github.com/subspace/letsid',
     packages=find_packages(),
     install_requires=[
-        'requests>=2.25.1',
         'Flask>=1.1.2',
         'Flask-Cors>=3.0.10',
-        'python-dotenv>=0.15.0'
         'Flask-Dance>=3.0.0',
+        'PyJWT>=2.0.0',
+        'python-dotenv>=0.15.0',
+        'requests>=2.25.1',
     ],
     entry_points={
         'console_scripts': [
