@@ -61,15 +61,16 @@ def finalize_registration():
         digital_signature = request.form.get('digital_signature')
         oidc_token = request.form.get('oidc_token')
         
-        # Here, you'd typically process the form data, like saving it to a database,
-        # calling an external API to finalize registration, etc.
-        # This is a placeholder for your registration logic.
+        # Registration logic goes here
         
         flash('Registration finalized successfully.')
         return redirect(url_for('index'))  # Redirect to the home page or a confirmation page
 
-    # If it's a GET request, just render the registration form
-    return render_template('finalize_registration.html')  # Make sure to rename your template accordingly
+    # For GET requests, retrieve OIDC token from URL parameters
+    oidc_token = request.args.get('oidc_token', '')  # Default to empty string if not found
+
+    # Pass the OIDC token to the template
+    return render_template('finalize_registration.html', oidc_token=oidc_token)
 
 @app.route('/issue-identity', methods=['GET', 'POST'])
 def issue_identity_route():
