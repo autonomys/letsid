@@ -5,6 +5,8 @@ from config import DevelopmentConfig, ProductionConfig
 from flask_dance.contrib.google import google
 from flask_dance.contrib.github import github
 from flask_dance.contrib.discord import discord
+import jwt
+import datetime
 from src.core.utils import generate_key_pair_and_csr
 from src.core.registration import register_user_with_letsid
 from src.core.issuance import issue_identity
@@ -64,6 +66,17 @@ def finalize_registration_google():
     resp = google.get("/oauth2/v2/userinfo")
     if resp.ok:
         user_info = resp.json()
+        # Log the user info for debugging purposes
+        print(user_info)
+        
+        # Payload for JWT with an expiration time of 5 minutes
+        payload = {
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=5),
+            'iat': datetime.datetime.utcnow(),
+            'sub': str(user_info['id']),  # Subject is the user's ID
+        }
+        # Encode the payload to create the JWT token
+        token = jwt.encode(payload, app.secret_key, algorithm='HS256')
         flash(f"Google: Logged in as: {user_info['name']} (Email: {user_info['email']})")
     else:
         flash("Failed to fetch user details from Google.")
@@ -78,6 +91,17 @@ def finalize_registration_github():
     resp = github.get("/user")
     if resp.ok:
         user_info = resp.json()
+        # Log the user info for debugging purposes
+        print(user_info)
+        
+        # Payload for JWT with an expiration time of 5 minutes
+        payload = {
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=5),
+            'iat': datetime.datetime.utcnow(),
+            'sub': str(user_info['id']),  # Subject is the user's ID
+        }
+        # Encode the payload to create the JWT token
+        token = jwt.encode(payload, app.secret_key, algorithm='HS256')
         flash(f"GitHub: Logged in as: {user_info['login']} (ID: {user_info['id']})")
     else:
         flash("Failed to fetch user details from GitHub.")
@@ -91,11 +115,28 @@ def finalize_registration_discord():
     resp = discord.get("/api/users/@me")
     if resp.ok:
         user_info = resp.json()
-        print(user_info)  # Console log the user info
+        # Log the user info for debugging purposes
+        print(user_info)
+        
+        # Payload for JWT with an expiration time of 5 minutes
+        payload = {
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=5),
+            'iat': datetime.datetime.utcnow(),
+            'sub': str(user_info['id']),  # Subject is the user's ID
+        }
+        # Encode the payload to create the JWT token
+        token = jwt.encode(payload, app.secret_key, algorithm='HS256')
+        # wrap both the user info and the token in a object
+        oidc_token = {
+            'user_info': user_info,
+            'jwt_token': token
+        }
+        # Provide feedback to the user and return the JWT token
         flash(f"Discord: Logged in as: {user_info['username']}# {user_info['discriminator']} (ID: {user_info['id']})")
+        return render_template('finalize_registration.html', oidc_token=oidc_token)
     else:
         flash("Failed to fetch user details from Discord.")
-    return render_template('finalize_registration.html', oidc_token=user_info)
+        return redirect(url_for('authorize.authorize', provider_name='discord'))
 
 @app.route('/finalize-registration')
 def finalize_registration():
