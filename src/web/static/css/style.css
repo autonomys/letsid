@@ -54,6 +54,19 @@ textarea {
     resize: vertical;
 }
 
+.logo {
+    max-width: 250px;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+}
+
+.header-logo {
+    max-width: 120px;
+    height: auto;
+    display: block;
+}
+
 .btn, input[type="submit"] {
     width: 100%;
     padding: 15px;
