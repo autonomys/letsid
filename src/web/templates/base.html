@@ -4,16 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Set dynamic page title -->
     <title>{% block title %}{% endblock %} - LetsID</title>
+    <!-- Link to external stylesheet -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <!-- Header section -->
     <header class="site-header">
         <div class="header-content">
+            <!-- Back navigation link -->
             <a href="/" class="back-arrow">&#x2190; Back</a>
+            <!-- Site title -->
             <h1>LetsID</h1>
         </div>
     </header>
+    <!-- Main content section -->
     {% block content %}{% endblock %}
 </body>
 </html>

@@ -4,16 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Set page title -->
     <title>LetsID - Home</title>
+    <!-- Link to external stylesheet -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <!-- Main content container -->
     <div class="centered-container">
+        <!-- Page heading -->
         <h1>Welcome to LetsID</h1>
+        <!-- Page description -->
         <p>This is the home page of LetsID, your trusted platform for managing identities.</p>
         
+        <!-- Button container -->
         <div class="button-container">
+            <!-- Link to registration page -->
             <a href="/register" class="btn btn-blue">Register Myself</a>
+            <!-- Link to issue identity page -->
             <a href="/issue-identity" class="btn btn-blue">Issue Identity</a>
         </div>
     </div>

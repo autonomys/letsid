@@ -5,19 +5,25 @@
 
 {% block content %}
 <div class="form-container">
+    <!-- Registration heading -->
     <h1>User Registration</h1>
+    <!-- OAuth provider selection prompt -->
     <h3>Select an OAuth Provider</h3>
+    <!-- OAuth provider selection form -->
     <form class="oauth-provider-form">
+        <!-- Google OAuth button -->
         <div class="form-field">
             <a href="{{ url_for('authorize.google.login') }}" class="oauth-button google">
                 Sign in with Google
             </a>
         </div>
+        <!-- GitHub OAuth button -->
         <div class="form-field">
             <a href="{{ url_for('authorize.github.login') }}" class="oauth-button github">
                 Sign in with GitHub
             </a>
         </div>
+        <!-- Discord OAuth button -->
         <div class="form-field">
             <a href="{{ url_for('authorize.discord.login') }}" class="oauth-button discord">
                 Sign in with Discord

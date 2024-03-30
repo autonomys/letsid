@@ -1,3 +1,4 @@
+# src/web/app.py
 import os
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, redirect, url_for, flash, session
@@ -12,7 +13,6 @@ from src.core.registration import register_user_with_letsid
 from src.core.issuance import issue_identity
 from src.web.api import api
 from src.web.authorize import authorize_bp
-from src.web.oauth_routes import oauth_bp
 
 load_dotenv()
 
@@ -23,13 +23,13 @@ if env == 'production':
     app.config.from_object(ProductionConfig)
 else:
     app.config.from_object(DevelopmentConfig)
-    
+
 app.register_blueprint(api, url_prefix='/api')
 app.register_blueprint(authorize_bp, url_prefix='/authorize')
-app.register_blueprint(oauth_bp)
 
-app.secret_key = os.environ.get('SECRET_KEY', 'default_fallback_secret_key')  # Change this to a random secret key
+app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))  # Utilizing a stronger secret key generator
 
+# Function to create JWT token with user ID and expiration
 def create_jwt_token(user_id, secret_key):
     payload = {
         'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=5),
@@ -48,31 +48,30 @@ def register():
     if request.method == 'POST':
         # Extract form data
         oidc_token = request.form['oidc_token']  # Placeholder for actual OIDC token handling
-        
+
         # Generate key pair and CSR
         public_key_hex, private_key_hex, seed_hex, csr = generate_key_pair_and_csr()
-        
+
         # Placeholder for actual signature generation
         digital_signature = "digital_signature_placeholder"
-        
+
         # Register user with LetsID server
         registration_result = register_user_with_letsid(csr, digital_signature, oidc_token)
-        
+
         if registration_result:
             flash('Registration successful.')
             return redirect(url_for('index'))
         else:
             flash('Registration failed. Please try again.')
-    
+
     # Render the registration form template
     return render_template('register.html')
 
-@app.route('/finalize-registration/google')
-def finalize_registration_google():
-    # This route handles the finalization for Google OAuth
-    if not google.authorized:
-        return redirect(url_for('authorize.authorize', provider_name='google'))
-    resp = google.get("/oauth2/v2/userinfo")
+# Simplified route for finalizing registration with OAuth providers
+def finalize_registration(provider_name, user_info_fetch_url):
+    if not getattr(globals()[provider_name], 'authorized', None):
+        return redirect(url_for('authorize.authorize', provider_name=provider_name))
+    resp = globals()[provider_name].get(user_info_fetch_url)
     if resp.ok:
         user_info = resp.json()
         token = create_jwt_token(user_info['id'], app.secret_key)
@@ -82,44 +81,20 @@ def finalize_registration_google():
         }
         return render_template('finalize_registration.html', oidc_token=oidc_token)
     else:
-        flash("Failed to fetch user details from Google.")
-        return redirect(url_for('authorize.authorize', provider_name='google'))
+        flash(f"Failed to fetch user details from {provider_name.capitalize()}.")
+        return redirect(url_for('authorize.authorize', provider_name=provider_name))
 
+@app.route('/finalize-registration/google')
+def finalize_registration_google():
+    return finalize_registration('google', "/oauth2/v2/userinfo")
 
 @app.route('/finalize-registration/github')
 def finalize_registration_github():
-    if not github.authorized:
-        return redirect(url_for('authorize.authorize', provider_name='github'))
-    resp = github.get("/user")
-    if resp.ok:
-        user_info = resp.json()
-        token = create_jwt_token(user_info['id'], app.secret_key)
-        oidc_token = {
-            'user_info': user_info,
-            'jwt_token': token
-        }
-        return render_template('finalize_registration.html', oidc_token=oidc_token)
-    else:
-        flash("Failed to fetch user details from GitHub.")
-        return redirect(url_for('authorize.authorize', provider_name='github'))
-
+    return finalize_registration('github', "/user")
 
 @app.route('/finalize-registration/discord')
 def finalize_registration_discord():
-    if not discord.authorized:
-        return redirect(url_for('authorize.authorize', provider_name='discord'))
-    resp = discord.get("/api/users/@me")
-    if resp.ok:
-        user_info = resp.json()
-        token = create_jwt_token(user_info['id'], app.secret_key)
-        oidc_token = {
-            'user_info': user_info,
-            'jwt_token': token
-        }
-        return render_template('finalize_registration.html', oidc_token=oidc_token)
-    else:
-        flash("Failed to fetch user details from Discord.")
-        return redirect(url_for('authorize.authorize', provider_name='discord'))
+    return finalize_registration('discord', "/api/users/@me")
 
 @app.route('/issue-identity', methods=['GET', 'POST'])
 def issue_identity_route():
@@ -127,16 +102,16 @@ def issue_identity_route():
         user_private_key_hex = request.form['user_private_key']
         user_identifier = request.form['user_identifier']
         csr = "csr_placeholder"  # Replace with actual CSR generation or retrieval
-        
+
         # Create an x509 certificate for the controllee
         x509_certificate = "x509_certificate_placeholder"  # Replace with actual certificate creation
-        
+
         issuance_result = issue_identity(x509_certificate, user_identifier)
         if issuance_result:
             flash('Identity issued successfully.')
             return redirect(url_for('index'))
         else:
             flash('Failed to issue identity. Please try again.')
-    
+
     # Render the issue identity form template
     return render_template('issue_identity.html')
