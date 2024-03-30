@@ -9,6 +9,7 @@ api = Blueprint('api', __name__)
 def register():
     # Extract data from request
     data = request.get_json()
+    print('Data:', data)
     # Assuming data contains 'csr', 'digital_signature', and 'oidc_token'
     registration_result = register_user_with_letsid(data['csr'], data['digital_signature'], data['oidc_token'])
 

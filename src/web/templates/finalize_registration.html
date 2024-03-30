@@ -6,7 +6,7 @@
 {% block content %}
 <div class="form-container">
     <h1>User Registration</h1>
-    <form action="/api/register" method="post" class="registration-form">
+    <form id="registration-form" class="registration-form">
         <div class="form-field">
             <label for="csr">CSR:</label>
             <textarea id="csr" name="csr" required></textarea>
@@ -38,5 +38,45 @@
         }
     }
 </script>
+
+<script>
+    document.getElementById('registration-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        
+        // Collect form data
+        var formData = {
+            csr: document.getElementById('csr').value,
+            digital_signature: document.getElementById('digital_signature').value,
+            oidc_token: document.getElementById('oidc_token').value
+        };
+        console.log('formData: ', formData)
+        // Send the form data as JSON using fetch
+        fetch('/api/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('data: ', data)
+            if (data.status === 'success') {
+                // Handle success
+                alert('Registration successful.');
+                window.location.href = '/'; // Redirect to the homepage or another page
+            } else {
+                // Handle failure
+                alert('Registration failed: ' + data.message);
+            }
+        })
+        .catch(error => {
+            // Handle errors that occur during the fetch
+            alert('Error: ' + error.message);
+        });
+    });
+</script>    
 
 {% endblock %}

@@ -1,11 +1,14 @@
 # src/core/client.py
 import os
+import json
 import requests
 from typing import Tuple, Optional, Dict
 
 class LetsIDClient:
-    def __init__(self, server_url: str = os.getenv("LETSID_SERVER_URL", "https://letsid.ai/api/")):
-        self.server_url = server_url
+    def __init__(self):
+        self.slack_url = "https://slack.com/api/chat.postMessage"
+        self.slack_token = os.getenv("SLACK_TOKEN")
+        self.slack_channel = os.getenv("SLACK_CHANNEL")
 
     def generate_key_pair_and_csr(self) -> Tuple[str, str, str, str]:
         """
@@ -27,11 +30,21 @@ class LetsIDClient:
         return digital_signature
 
     def send_data_to_letsid(self, endpoint: str, data: Dict) -> Optional[Dict]:
+        print(f"Slack token: {self.slack_token}")
+        print(f"Slack channel: {self.slack_channel}")
         """
-        Sends data to the LetsID server for a specific endpoint.
+        Posts a message to a Slack channel.
         """
-        full_url = self.server_url + endpoint
-        response = requests.post(full_url, json=data)
+        headers = {
+            "Authorization": f"Bearer {self.slack_token}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "channel": self.slack_channel,
+            "text": f"```Endpoint: {endpoint}\nData: {json.dumps(data, indent=2)}```"
+        }
+        response = requests.post(self.slack_url, headers=headers, json=payload)
+        print(f"Slack response: {response.json()}")
 
         if response.status_code == 200:
             return response.json()
