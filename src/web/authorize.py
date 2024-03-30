@@ -14,21 +14,21 @@ google_bp = make_google_blueprint(
     client_id=os.environ.get("GOOGLE_CLIENT_ID"),
     client_secret=os.environ.get("GOOGLE_CLIENT_SECRET"),
     scope=["profile", "email"],
-    redirect_to="finalize_registration"
+    redirect_to="finalize-registration_google"
 )
 
 github_bp = make_github_blueprint(
     client_id=os.environ.get("GITHUB_CLIENT_ID"),
     client_secret=os.environ.get("GITHUB_CLIENT_SECRET"),
     scope="user",
-    redirect_to="finalize_registration"
+    redirect_to="finalize_registration_github"
 )
 
 discord_bp = make_discord_blueprint(
     client_id=os.environ.get("DISCORD_CLIENT_ID"),
     client_secret=os.environ.get("DISCORD_CLIENT_SECRET"),
     scope=["identify", "email"],
-    redirect_to="finalize_registration"
+    redirect_to="finalize_registration_discord"
 )
 
 # Define the blueprint for authorization routes
@@ -42,6 +42,12 @@ authorize_bp.register_blueprint(discord_bp, url_prefix="/discord")
 # Route to initiate OAuth login for different providers
 @authorize_bp.route('/<provider_name>')
 def authorize(provider_name):
+    print(f"Authorizing {provider_name}")
+    session['oauth_provider'] = provider_name
+    print(f"Session set for: {session.get('oauth_provider')}")
+    session['oauth_provider'] = provider_name
+    print(provider_name)
+    print(session['oauth_provider'])
     if provider_name == 'google':
         return redirect(url_for('authorize.google.login'))
     elif provider_name == 'github':

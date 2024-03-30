@@ -1,7 +1,10 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask, request, render_template, redirect, url_for, flash
+from flask import Flask, request, render_template, redirect, url_for, flash, session
 from config import DevelopmentConfig, ProductionConfig
+from flask_dance.contrib.google import google
+from flask_dance.contrib.github import github
+from flask_dance.contrib.discord import discord
 from src.core.utils import generate_key_pair_and_csr
 from src.core.registration import register_user_with_letsid
 from src.core.issuance import issue_identity
@@ -53,23 +56,98 @@ def register():
     # Render the registration form template
     return render_template('register.html')
 
-@app.route('/finalize-registration', methods=['GET', 'POST'])
+@app.route('/finalize-registration/google')
+def finalize_registration_google():
+    # This route handles the finalization for Google OAuth
+    if not google.authorized:
+        return redirect(url_for('authorize.authorize', provider_name='google'))
+    resp = google.get("/oauth2/v2/userinfo")
+    if resp.ok:
+        user_info = resp.json()
+        flash(f"Google: Logged in as: {user_info['name']} (Email: {user_info['email']})")
+    else:
+        flash("Failed to fetch user details from Google.")
+    # Implement any specific logic for Google OAuth finalization here
+    return render_template('finalize_registration.html', oidc_token="Your Google OIDC Token Here")
+
+@app.route('/finalize-registration/github')
+def finalize_registration_github():
+    # Similar implementation for GitHub
+    if not github.authorized:
+        return redirect(url_for('authorize.authorize', provider_name='github'))
+    resp = github.get("/user")
+    if resp.ok:
+        user_info = resp.json()
+        flash(f"GitHub: Logged in as: {user_info['login']} (ID: {user_info['id']})")
+    else:
+        flash("Failed to fetch user details from GitHub.")
+    return render_template('finalize_registration.html', oidc_token="Your GitHub OIDC Token Here")
+
+@app.route('/finalize-registration/discord')
+def finalize_registration_discord():
+    # And for Discord
+    if not discord.authorized:
+        return redirect(url_for('authorize.authorize', provider_name='discord'))
+    resp = discord.get("/api/users/@me")
+    if resp.ok:
+        user_info = resp.json()
+        print(user_info)  # Console log the user info
+        flash(f"Discord: Logged in as: {user_info['username']}# {user_info['discriminator']} (ID: {user_info['id']})")
+    else:
+        flash("Failed to fetch user details from Discord.")
+    return render_template('finalize_registration.html', oidc_token=user_info)
+
+@app.route('/finalize-registration')
 def finalize_registration():
-    if request.method == 'POST':
-        # Extract form data
-        csr = request.form.get('csr')
-        digital_signature = request.form.get('digital_signature')
-        oidc_token = request.form.get('oidc_token')
+    provider_name = session.get('oauth_provider')
+    print(provider_name)
+    user_info = None
+    
+    # Handling Google OAuth
+    if provider_name == 'google':
+        if not google.authorized:
+            return redirect(url_for('authorize.authorize', provider_name='google'))
         
-        # Registration logic goes here
+        resp = google.get("/oauth2/v2/userinfo")
+        if resp.ok:
+            user_info = resp.json()
+            print(user_info)  # Console log the user info
+            flash(f"Google: Logged in as: {user_info['name']} (Email: {user_info['email']})")
+        else:
+            flash("Failed to fetch user details from Google.")
+
+    # Handling GitHub OAuth
+    elif provider_name == 'github':
+        if not github.authorized:
+            return redirect(url_for('authorize.authorize', provider_name='github'))
         
-        flash('Registration finalized successfully.')
-        return redirect(url_for('index'))  # Redirect to the home page or a confirmation page
+        resp = github.get("/user")
+        if resp.ok:
+            user_info = resp.json()
+            print(user_info)  # Console log the user info
+            flash(f"GitHub: Logged in as: {user_info['login']} (ID: {user_info['id']})")
+        else:
+            flash("Failed to fetch user details from GitHub.")
 
-    # For GET requests, retrieve OIDC token from URL parameters
-    oidc_token = request.args.get('oidc_token', '')  # Default to empty string if not found
+    # Handling Discord OAuth
+    elif provider_name == 'discord':
+        if not discord.authorized:
+            flash("You are not authorized via Discord. Please try again.")
+            return redirect(url_for('authorize.authorize', provider_name='discord'))
+        
+        resp = discord.get("/api/users/@me")
+        if resp.ok:
+            user_info = resp.json()
+            print(user_info)  # Console log the user info
+            flash(f"Discord: Logged in as: {user_info['username']}# {user_info['discriminator']} (ID: {user_info['id']})")
+        else:
+            flash("Failed to fetch user details from Discord.")
 
-    # Pass the OIDC token to the template
+    else:
+        flash("Invalid OAuth provider.")
+        
+    oidc_token = "extracted_from_user_info_or_elsewhere"
+
     return render_template('finalize_registration.html', oidc_token=oidc_token)
 
 @app.route('/issue-identity', methods=['GET', 'POST'])
