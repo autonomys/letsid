@@ -11,17 +11,32 @@
             <label for="csr">CSR:</label>
             <textarea id="csr" name="csr" required></textarea>
         </div>
+
         <div class="form-field">
             <label for="digital_signature">Digital Signature:</label>
             <input type="text" id="digital_signature" name="digital_signature" required>
         </div>
+
         <div class="form-field">
-            <label for="oidc_token">OIDC Token:</label>
-            <input type="text" id="oidc_token" name="oidc_token" value="{{ oidc_token }}" readonly required>
+            <button type="button" class="btn toggle-btn" onclick="toggleOIDCToken()">Show/Hide OIDC Token</button>
+            <label for="oidc_token" style="display:none;" >OIDC Token (for debugging):</label>
+            <textarea id="oidc_token" name="oidc_token" style="display:none;" readonly>{{ oidc_token|tojson|safe }}</textarea>
         </div>
         <div class="form-field">
             <input type="submit" value="Register" class="submit-button">
         </div>
     </form>
 </div>
+
+<script>
+    function toggleOIDCToken() {
+        var x = document.getElementById("oidc_token");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+    }
+</script>
+
 {% endblock %}

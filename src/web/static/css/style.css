@@ -1,3 +1,4 @@
+/* src/web/static/style.css */
 @font-face {
     font-family: 'Modern Sans';
     src: local('Arial'), local('Helvetica'), local('Sans-serif');
@@ -187,6 +188,16 @@ input[type="submit"]:active, .btn:active {
     left: 15px; /* Icon position from left */
     top: 50%;
     transform: translateY(-50%);
+}
+
+.toggle-btn {
+    background-color: #f7f7f7; /* Light grey background */
+    color: #007bff; /* Blue text color */
+    border: 1px solid #007bff; /* Blue border */
+}
+
+.toggle-btn:hover {
+    background-color: #e7e7e7; /* Slightly darker grey background on hover */
 }
 
 @media (max-width: 768px) {
