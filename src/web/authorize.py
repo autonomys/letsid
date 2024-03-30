@@ -14,21 +14,21 @@ google_bp = make_google_blueprint(
     client_id=os.environ.get("GOOGLE_CLIENT_ID"),
     client_secret=os.environ.get("GOOGLE_CLIENT_SECRET"),
     scope=["profile", "email"],
-    redirect_to="authorize.google.authorized"
+    redirect_to="finalize_registration"
 )
 
 github_bp = make_github_blueprint(
     client_id=os.environ.get("GITHUB_CLIENT_ID"),
     client_secret=os.environ.get("GITHUB_CLIENT_SECRET"),
     scope="user",
-    redirect_to="authorize.github.authorized"
+    redirect_to="finalize_registration"
 )
 
 discord_bp = make_discord_blueprint(
     client_id=os.environ.get("DISCORD_CLIENT_ID"),
     client_secret=os.environ.get("DISCORD_CLIENT_SECRET"),
     scope=["identify", "email"],
-    redirect_to="authorize.discord.authorized"
+    redirect_to="finalize_registration"
 )
 
 # Define the blueprint for authorization routes
