@@ -9,5 +9,25 @@
     <h1>Welcome to LetsID</h1>
     <p>This is the home page of LetsID, your trusted platform for managing identities.</p>
     <p>Get started by registering or issuing an identity.</p>
+
+    <div>
+        <h2>Register</h2>
+        <form action="/register" method="POST">
+            <label for="oidc_token">OIDC Token:</label>
+            <input type="text" id="oidc_token" name="oidc_token" required>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+
+    <div>
+        <h2>Issue Identity</h2>
+        <form action="/issue-identity" method="POST">
+            <label for="user_private_key">User Private Key:</label>
+            <input type="text" id="user_private_key" name="user_private_key" required>
+            <label for="user_identifier">User Identifier:</label>
+            <input type="text" id="user_identifier" name="user_identifier" required>
+            <button type="submit">Issue Identity</button>
+        </form>
+    </div>
 </body>
 </html>

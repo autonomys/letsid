@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LetsID - Issue Identity</title>
+</head>
+<body>
+    <h1>Issue Identity</h1>
+    <p>Issue an identity by providing the necessary details:</p>
+
+    <form action="/issue-identity" method="POST">
+        <label for="x509_certificate">X.509 Certificate:</label>
+        <input type="text" id="x509_certificate" name="x509_certificate" required>
+        <label for="user_identifier">User Identifier:</label>
+        <input type="text" id="user_identifier" name="user_identifier" required>
+        <button type="submit">Issue Identity</button>
+    </form>
+</body>
+</html>
