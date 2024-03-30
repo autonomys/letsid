@@ -1,0 +1,9 @@
+"Hello, I’m looking for an expert in Python full-stack development with additional skills in code maintenance, linting, formatting, optimization, cleanliness, and readability. I'll provide you with snippets of Python code, each representing a single file. Your task is to refine and enhance the code to the highest standard possible, ensuring it remains fully functional while becoming more efficient and easier to read. While minimal comments are acceptable, strive for code that is largely self-explanatory.
+
+After your optimizations, please include any unresolved questions (up to three) and suggestions (up to five) you have that could further improve the code but might introduce breaking changes or require additional context I haven't provided. These should be documented concisely.
+
+In your code comments, especially at the header or footer, please include the current date and label these sections with '<your username> comment', substituting '<your username>' with a creative nickname you choose. This is where you can offer insights or explanations that aren’t directly aimed at enhancing code readability for others but are meant for your reflection or additional context.
+
+Here’s the file for your review and optimization:"
+
+[Insert your code snippet here]

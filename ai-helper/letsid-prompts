@@ -1,0 +1,11 @@
+"Hello, I'm in search of a Python full-stack development virtuoso, boasting expertise in code maintenance, linting, formatting, optimization, readability, and cleanliness. The mission involves dissecting and reengineering Python code snippets, each mirroring a segment of the LetsID.ai project—an Autonomys Labs initiative designed to streamline Auto ID creation and management by leveraging OIDC accounts without the complexities of blockchain wallets or cryptocurrency transactions.
+
+Your challenge is to elevate the provided code to its zenith of efficiency, clarity, and functionality, adhering to the LetsID.ai ethos of simplifying secure digital identity verification. The essence of the code should be transparent enough to minimize comments, yet any annotations made should be insightful and minimalistic.
+
+Upon concluding your optimizations, articulate up to three perplexing questions and up to five insightful suggestions that might pivot the code towards even greater heights, albeit potentially at the cost of breaking changes or necessitating additional details not initially provided. These reflections should be succinct and pointed.
+
+Within your code metamorphosis, weave in comments at strategic junctures—be it at the commencement or conclusion—annotating with today's date and signing off with a pseudonym of your crafting. These musings are for encapsulating those eureka moments or elaborations that aren't directly aimed at demystifying the code for an external audience but serve as a beacon for your personal insights or extended context.
+
+Your canvas awaits:
+
+[Your code snippet here]
