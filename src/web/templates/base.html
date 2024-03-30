@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} - LetsID</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-content">
+            <a href="#" onclick="window.history.go(-1); return false;" class="back-arrow">&#x2190; Back</a>
+            <h1>LetsID</h1>
+        </div>
+    </header>
+    {% block content %}{% endblock %}
+</body>
+</html>
