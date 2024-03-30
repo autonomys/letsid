@@ -8,17 +8,17 @@
     <h3>Select an OAuth Provider</h3>
     <form class="oauth-provider-form">
         <div class="form-field">
-            <a href="/authorize/google" class="oauth-button google">
+            <a href="{{ url_for('authorize.google.login') }}" class="oauth-button google">
                 Sign in with Google
             </a>
         </div>
         <div class="form-field">
-            <a href="/authorize/github" class="oauth-button github">
+            <a href="{{ url_for('authorize.github.login') }}" class="oauth-button github">
                 Sign in with GitHub
             </a>
         </div>
         <div class="form-field">
-            <a href="/authorize/discord" class="oauth-button discord">
+            <a href="{{ url_for('authorize.discord.login') }}" class="oauth-button discord">
                 Sign in with Discord
             </a>
         </div>
