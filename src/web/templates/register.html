@@ -1,25 +1,26 @@
 {% extends 'base.html' %}
 
-{% block title %}User Registration{% endblock %}
+{% block title %}OAuth Provider Selection{% endblock %}
 
 {% block content %}
 <div class="form-container">
     <h1>User Registration</h1>
-    <form action="/api/register" method="post" class="registration-form">
+    <h3>Select an OAuth Provider</h3>
+    <form class="oauth-provider-form">
         <div class="form-field">
-            <label for="csr">CSR:</label>
-            <textarea id="csr" name="csr" required></textarea>
+            <a href="/authorize/google" class="oauth-button google">
+                Sign in with Google
+            </a>
         </div>
         <div class="form-field">
-            <label for="digital_signature">Digital Signature:</label>
-            <input type="text" id="digital_signature" name="digital_signature" required>
+            <a href="/authorize/github" class="oauth-button github">
+                Sign in with GitHub
+            </a>
         </div>
         <div class="form-field">
-            <label for="oidc_token">OIDC Token:</label>
-            <input type="text" id="oidc_token" name="oidc_token" required>
-        </div>
-        <div class="form-field">
-            <input type="submit" value="Register" class="submit-button">
+            <a href="/authorize/discord" class="oauth-button discord">
+                Sign in with Discord
+            </a>
         </div>
     </form>
 </div>

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}User Registration{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>User Registration</h1>
+    <form action="/api/register" method="post" class="registration-form">
+        <div class="form-field">
+            <label for="csr">CSR:</label>
+            <textarea id="csr" name="csr" required></textarea>
+        </div>
+        <div class="form-field">
+            <label for="digital_signature">Digital Signature:</label>
+            <input type="text" id="digital_signature" name="digital_signature" required>
+        </div>
+        <div class="form-field">
+            <label for="oidc_token">OIDC Token:</label>
+            <input type="text" id="oidc_token" name="oidc_token" required>
+        </div>
+        <div class="form-field">
+            <input type="submit" value="Register" class="submit-button">
+        </div>
+    </form>
+</div>
+{% endblock %}

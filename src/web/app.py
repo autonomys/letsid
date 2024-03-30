@@ -1,11 +1,15 @@
-# src/web/app.py
 import os
+from dotenv import load_dotenv
 from flask import Flask, request, render_template, redirect, url_for, flash
 from config import DevelopmentConfig, ProductionConfig
 from src.core.utils import generate_key_pair_and_csr
 from src.core.registration import register_user_with_letsid
 from src.core.issuance import issue_identity
 from src.web.api import api
+from src.web.authorize import authorize_bp
+from src.web.oauth_routes import oauth_bp
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -16,6 +20,9 @@ else:
     app.config.from_object(DevelopmentConfig)
     
 app.register_blueprint(api, url_prefix='/api')
+app.register_blueprint(authorize_bp, url_prefix='/authorize')
+app.register_blueprint(oauth_bp)
+
 app.secret_key = os.environ.get('SECRET_KEY', 'default_fallback_secret_key')  # Change this to a random secret key
 
 @app.route('/')
@@ -65,6 +72,3 @@ def issue_identity_route():
     
     # Render the issue identity form template
     return render_template('issue_identity.html')
-
-if __name__ == '__main__':
-    app.run(debug=True)

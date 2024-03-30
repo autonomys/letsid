@@ -15,6 +15,7 @@ setup(
         'Flask>=1.1.2',
         'Flask-Cors>=3.0.10',
         'python-dotenv>=0.15.0'
+        'Flask-Dance>=3.0.0',
     ],
     entry_points={
         'console_scripts': [
