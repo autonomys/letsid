@@ -1,12 +1,20 @@
 # src/web/app.py
 import os
 from flask import Flask, request, render_template, redirect, url_for, flash
+from config import DevelopmentConfig, ProductionConfig
 from src.core.utils import generate_key_pair_and_csr
 from src.core.registration import register_user_with_letsid
 from src.core.issuance import issue_identity
 from src.web.api import api
 
 app = Flask(__name__)
+
+env = os.environ.get('FLASK_ENV', 'development')
+if env == 'production':
+    app.config.from_object(ProductionConfig)
+else:
+    app.config.from_object(DevelopmentConfig)
+    
 app.register_blueprint(api, url_prefix='/api')
 app.secret_key = os.environ.get('SECRET_KEY', 'default_fallback_secret_key')  # Change this to a random secret key
 

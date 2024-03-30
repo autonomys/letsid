@@ -42,3 +42,6 @@ htmlcov/
 .tox/
 .nox/
 .cover
+
+# Environments variables
+.env
