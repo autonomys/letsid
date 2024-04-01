@@ -1,35 +1,49 @@
-<!-- src/web/templates/finalize_registration.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}User Registration{% endblock %}
 
 {% block content %}
+<script src="/static/js/finalize_registration.js"></script>
 <div class="form-container">
     <h1>User Registration</h1>
     <form id="registration-form" class="registration-form">
+
+        <!-- Public Key in a readonly input field with a copy button -->
         <div class="form-field">
-            <label for="csr">CSR:</label>
-            <textarea id="csr" name="csr" required></textarea>
+            <label for="public_key">Public Key:</label>
+            <input type="text" id="public_key" name="public_key" value="{{ public_key_hex }}" readonly>
+            <button type="button" class="copy-button" onclick="copyToClipboard('public_key')">Copy</button>
         </div>
 
+        <!-- Private Key in a readonly input field with a copy button -->
         <div class="form-field">
-            <label for="digital_signature">Digital Signature:</label>
-            <input type="text" id="digital_signature" name="digital_signature" required>
+            <label for="private_key">Private Key:</label>
+            <input type="text" id="private_key" name="private_key" value="{{ private_key_hex }}" readonly>
+            <button type="button" class="copy-button" onclick="copyToClipboard('private_key')">Copy</button>
         </div>
 
+        <!-- Seed in a readonly input field with a copy button -->
         <div class="form-field">
-            <button type="button" class="btn toggle-btn" onclick="toggleOIDCToken()">Show/Hide OIDC Token</button>
-            <label for="oidc_token" style="display:none;" >OIDC Token (for debugging):</label>
-            <textarea id="oidc_token" name="oidc_token" style="display:none;" readonly>{{ oidc_token|tojson|safe }}</textarea>
+            <label for="seed">Seed:</label>
+            <input type="text" id="seed" name="seed" value="{{ seed_hex }}" readonly>
+            <button type="button" class="copy-button" onclick="copyToClipboard('seed')">Copy</button>
         </div>
+
+        <!-- Auto ID in a readonly input field with a copy button -->
+        <div class="form-field">
+            <label for="auto_id">Auto ID:</label>
+            <input type="text" id="auto_id" name="auto_id" value="{{ auto_id }}" readonly>
+            <button type="button" class="copy-button" onclick="copyToClipboard('auto_id')">Copy</button>
+        </div>
+
+        <!-- Hidden OIDC Token -->
+        <input type="hidden" id="oidc_token" name="oidc_token" value="{{ oidc_token }}">
+
         <div class="form-field">
             <input type="submit" value="Register" class="submit-button">
         </div>
     </form>
+    <div id="toast">Saved to clipboard!</div>
 </div>
-
-<!-- Import the JavaScript file -->
-<script src="{{ url_for('static', filename='js/finalize_registration.js') }}"></script>
 
 {% endblock %}

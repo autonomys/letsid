@@ -39,14 +39,19 @@ p {
     margin-bottom: 2em;
 }
 
-input[type="text"], textarea {
-    width: 100%;
+input[type="text"][readonly] {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 14px;
     box-sizing: border-box;
     font-size: 16px;
-    margin-bottom: 1em;
+    line-height: 1.5;
+    height: 40px;
+    margin-right: 10px;
+    background-color: #f3f3f3;
+    color: #333;
+    cursor: not-allowed;
+    flex-grow: 1;
 }
 
 textarea {
@@ -163,15 +168,10 @@ textarea {
     text-transform: uppercase;
     position: relative;
     text-decoration: none;
-}
-
-.oauth-button svg {
-    position: absolute;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 20px;
-    width: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 .oauth-button:hover, .oauth-button:focus {
@@ -215,6 +215,96 @@ textarea {
 
 .toggle-btn:hover {
     background-color: #e7e7e7;
+}
+
+.form-field {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+    margin-bottom: 1em;
+}
+
+.form-field label {
+    margin-bottom: 0;
+    font-weight: bold;
+    flex-basis: 20%;
+    margin-right: 10px;
+}
+
+.form-field p {
+    font-size: 16px;
+    margin: 0;
+    padding: 10px 0;
+    flex-grow: 1;
+    text-align: left;
+}
+
+.copy-button {
+    padding: 5px 10px;
+    background-color: white;
+    color: #007bff;
+    border: 2px solid #007bff;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    font-size: 14px;
+    vertical-align: middle;
+    min-width: 60px;
+    height: 40px;
+    line-height: 30px; 
+    margin-left: 10px;
+}
+
+.copy-button:hover, .copy-button:focus {
+    background-color: #007bff;
+    color: white;
+    border-color: #0056b3;
+}
+
+
+#toast {
+    visibility: hidden;
+    min-width: 200px;
+    margin-left: -125px;
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    border-radius: 14px;
+    padding: 10px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    bottom: 30px;
+    font-size: 17px;
+}
+
+#toast.show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+    from {bottom: 0; opacity: 0;} 
+    to {bottom: 30px; opacity: 1;}
+}
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+@-webkit-keyframes fadeout {
+    from {bottom: 30px; opacity: 1;} 
+    to {bottom: 0; opacity: 0;}
+}
+@keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0; }
+    10%, 90% { opacity: 1; }
 }
 
 /* Responsive Styles */

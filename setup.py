@@ -18,6 +18,8 @@ setup(
         'PyJWT>=2.0.0',
         'python-dotenv>=0.15.0',
         'requests>=2.25.1',
+        'bip39',
+        'py-sr25519-bindings'
     ],
     entry_points={
         'console_scripts': [

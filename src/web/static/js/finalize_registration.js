@@ -1,12 +1,22 @@
 // static/js/finalize_registration.js
 
-function toggleOIDCToken() {
-    var x = document.getElementById("oidc_token");
-    if (x.style.display === "none") {
-        x.style.display = "block";
-    } else {
-        x.style.display = "none";
-    }
+function copyToClipboard(elementId) {
+    var element = document.getElementById(`${elementId}_text`).innerText;
+
+    navigator.clipboard.writeText(element.value).then(function() {
+        showToast('Copied to clipboard!');
+    }, function(err) {
+        console.error('Could not copy text: ', err);
+    });
+
+    document.activeElement.blur();
+}
+    
+function showToast(message) {
+    var toast = document.getElementById("toast");
+    toast.innerText = 'Copied to clipboard!'; 
+    toast.className = "show";
+    setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 5000);
 }
 
 document.getElementById('registration-form').addEventListener('submit', function(event) {
