@@ -5,8 +5,19 @@
 {% block title %}AutoID{% endblock %}
 
 {% block content %}
-<div class="form-container">
-    <h1>AutoID Confirmation</h1>
-    <p>Your AutoID is: {{ auto_id }}</p>
-</div>
+<main class="centered-container">
+    <div class="form-container" role="region" aria-labelledby="autoid-confirmation">
+        <div class="congratulations-message">
+            <h1>Congratulations, you've registered your AutoID!</h1>
+        </div>
+        
+        <div class="form-field">
+            <label for="auto_id">Auto ID:</label>
+            <div class="input-group">
+                <input type="text" id="auto_id" name="auto_id" value="{{ auto_id }}" readonly>
+                <button type="button" class="copy-button" onclick="copyToClipboard('auto_id')">Copy</button>
+            </div>
+        </div>
+    </div>
+</main>
 {% endblock %}

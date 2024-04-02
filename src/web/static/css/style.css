@@ -285,6 +285,22 @@ textarea {
     animation: fadein 0.5s, fadeout 0.5s 2.5s;
 }
 
+
+.congratulations-message {
+    background-color: #e9f5ff;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.congratulations-message h1 {
+    color: #007bff;
+    font-size: 32px;
+    margin: 0;
+    padding: 0;
+}
+
 @-webkit-keyframes fadein {
     from {bottom: 0; opacity: 0;} 
     to {bottom: 30px; opacity: 1;}

@@ -56,17 +56,6 @@ def show_auto_id(user_auto_id):
 # User registration route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        oidc_token = request.form.get('oidc_token')  # Improved form data extraction
-        public_key_hex, private_key_hex, seed_hex, csr = generate_key_pair_and_csr()
-        digital_signature = "signature_placeholder"  # Placeholder for signature
-        
-        if register_user_with_letsid(csr, digital_signature, oidc_token):
-            flash('Registration successful.')
-            return redirect(url_for('index'))
-        else:
-            flash('Registration failed. Please try again.')
-
     return render_template('authorize.html')
 
 # Simplified OAuth registration finalization
