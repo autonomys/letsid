@@ -19,14 +19,15 @@ def perform_oidc_signup():
     oidc_token = "oidc_token_placeholder"
     return oidc_token
 
-def register_user_with_letsid(csr, digital_signature, oidc_token):
+def register_user_with_letsid(auto_id, public_key, jwt_token, decoded_jwt):
     """
     Prepares data for registration and calls the LetsID server.
     """
     data = {
-        "csr": csr,
-        "digital_signature": digital_signature,
-        "oidc_token": oidc_token
+        "auto_id": auto_id,
+        "public_key": public_key,
+        "jwt_token": jwt_token,
+        "decoded_jwt": decoded_jwt
     }
     return client.send_data_to_letsid("register", data)
 

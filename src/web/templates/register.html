@@ -1,34 +1,51 @@
 <!-- src/web/templates/register.html -->
+
 {% extends 'base.html' %}
 
-{% block title %}OAuth Provider Selection{% endblock %}
+{% block title %}User Registration{% endblock %}
 
 {% block content %}
 <div class="form-container">
-    <!-- Registration heading -->
     <h1>User Registration</h1>
-    <!-- OAuth provider selection prompt -->
-    <h3>Select an OAuth Provider</h3>
-    <!-- OAuth provider selection form -->
-    <form class="oauth-provider-form">
-        <!-- Google OAuth button -->
+    <form id="registration-form" class="registration-form">
+
+        <!-- Public Key in a readonly input field with a copy button -->
         <div class="form-field">
-            <a href="{{ url_for('authorize.google.login') }}" class="oauth-button google">
-                Sign in with Google
-            </a>
+            <label for="public_key">Public Key:</label>
+            <input type="text" id="public_key" name="public_key" value="{{ public_key_hex }}" readonly>
+            <button type="button" class="copy-button" onclick="copyToClipboard('public_key')">Copy</button>
         </div>
-        <!-- GitHub OAuth button -->
+
+        <!-- Private Key in a readonly input field with a copy button -->
         <div class="form-field">
-            <a href="{{ url_for('authorize.github.login') }}" class="oauth-button github">
-                Sign in with GitHub
-            </a>
+            <label for="private_key">Private Key:</label>
+            <input type="text" id="private_key" name="private_key" value="{{ private_key_hex }}" readonly>
+            <button type="button" class="copy-button" onclick="copyToClipboard('private_key')">Copy</button>
         </div>
-        <!-- Discord OAuth button -->
+
+        <!-- Seed in a readonly input field with a copy button -->
         <div class="form-field">
-            <a href="{{ url_for('authorize.discord.login') }}" class="oauth-button discord">
-                Sign in with Discord
-            </a>
+            <label for="seed">Seed:</label>
+            <input type="text" id="seed" name="seed" value="{{ seed_hex }}" readonly>
+            <button type="button" class="copy-button" onclick="copyToClipboard('seed')">Copy</button>
+        </div>
+
+        <!-- Auto ID in a readonly input field with a copy button -->
+        <div class="form-field">
+            <label for="auto_id">Auto ID:</label>
+            <input type="text" id="auto_id" name="auto_id" value="{{ auto_id }}" readonly>
+            <button type="button" class="copy-button" onclick="copyToClipboard('auto_id')">Copy</button>
+        </div>
+
+        <!-- Hidden OIDC Token -->
+        <input type="hidden" id="jwt_token" name="oidc_token" value="{{ oidc_token }}">
+
+        <div class="form-field">
+            <input type="submit" value="Register" class="submit-button">
         </div>
     </form>
+    <div id="toast">Saved to clipboard!</div>
 </div>
+
+<script src="/static/js/register.js"></script>
 {% endblock %}

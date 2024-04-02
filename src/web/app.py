@@ -7,6 +7,8 @@ from flask_dance.contrib.google import google
 from flask_dance.contrib.github import github
 from flask_dance.contrib.discord import discord
 import jwt
+from bip39 import bip39
+import sr25519
 from datetime import datetime, timedelta
 from src.core.utils import generate_key_pair_and_csr
 from src.core.registration import register_user_with_letsid
@@ -45,6 +47,12 @@ def create_jwt_token(user_id, secret_key):
 def index():
     return render_template('index.html')
 
+@app.route('/autoID/<user_auto_id>')
+def show_auto_id(user_auto_id):
+    # Here you can add any processing you need with user_auto_id
+    # For now, we just pass it to the template
+    return render_template('show_auto_id.html', auto_id=user_auto_id)
+
 # User registration route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -59,7 +67,7 @@ def register():
         else:
             flash('Registration failed. Please try again.')
 
-    return render_template('register.html')
+    return render_template('authorize.html')
 
 # Simplified OAuth registration finalization
 def finalize_registration(provider, user_info_endpoint):
@@ -70,8 +78,33 @@ def finalize_registration(provider, user_info_endpoint):
     if response.ok:
         user_info = response.json()
         token = create_jwt_token(user_info['id'], app.secret_key)
-        oidc_token = {'user_info': user_info, 'jwt_token': token}
-        return render_template('finalize_registration.html', oidc_token=oidc_token)
+        
+        # Generate a random BIP39 mnemonic seed
+        mnemonic = bip39.encode_bytes(os.urandom(16))
+        seed_bytes = bip39.phrase_to_seed(mnemonic)
+        sr25519_seed = seed_bytes[:32]
+        
+        # Derive public and private keys from the mnemonic
+        keypair = sr25519.pair_from_seed(sr25519_seed)
+        
+        seed_hex = seed_bytes.hex()
+        public_key_hex = keypair[0].hex()
+        private_key_hex = keypair[1].hex()
+        
+        # Generate a random Auto ID - you could use a UUID for this purpose
+        auto_id = os.urandom(16).hex()
+
+        # Packaging the OIDC token and mock values into a dictionary to pass to the template
+        registration_data = {
+            'oidc_token': token,  # Assuming this is the token to be passed as a hidden input
+            'public_key_hex': public_key_hex,
+            'private_key_hex': private_key_hex,
+            'seed_hex': seed_hex,
+            'auto_id': auto_id,
+            'user_info': user_info  # Include user_info if needed in the template for display or further processing
+        }
+
+        return render_template('register.html', **registration_data)
     else:
         flash(f"Failed to fetch user details from {provider.capitalize()}.")
         return redirect(url_for('authorize.authorize', provider_name=provider))

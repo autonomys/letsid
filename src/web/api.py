@@ -27,18 +27,25 @@ def validate_and_extract_jwt(token: str):
 def register():
     data = request.get_json(force=True, silent=True) or {}
     
-    oidc_data = json.loads(data.get('oidc_token', "{}"))
-    jwt_token = oidc_data.get('jwt_token')
+    print('data', data)
+    
+    public_key = data.get('public_key')
+    private_key = data.get('private_key')
+    seed = data.get('seed')
+    auto_id = data.get('auto_id')
+    jwt_token = data.get('jwt_token')
+    print('jwt_token', jwt_token)
 
     try:
         decoded_jwt = validate_and_extract_jwt(jwt_token)
+        print('decoded_jwt', decoded_jwt)
         # Place for additional JWT checks if necessary
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as e:
         return jsonify({"status": "error", "message": str(e)}), 401
     except Exception as e:
         return jsonify({"status": "error", "message": "JWT validation failed"}), 400
 
-    registration_result = register_user_with_letsid(data.get('csr'), data.get('digital_signature'), data.get('oidc_token'))
+    registration_result = register_user_with_letsid(auto_id, public_key, jwt_token, decoded_jwt)
     if registration_result:
         return jsonify({"status": "success", "data": registration_result}), 200
     return jsonify({"status": "error", "message": "Registration failed"}), 400
