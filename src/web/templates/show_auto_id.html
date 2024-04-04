@@ -5,19 +5,39 @@
 {% block title %}AutoID{% endblock %}
 
 {% block content %}
-<main class="centered-container">
-    <div class="form-container" role="region" aria-labelledby="autoid-confirmation">
-        <div class="congratulations-message">
-            <h1>Congratulations, you've registered your AutoID!</h1>
-        </div>
-        
-        <div class="form-field">
-            <label for="auto_id">Auto ID:</label>
-            <div class="input-group">
-                <input type="text" id="auto_id" name="auto_id" value="{{ auto_id }}" readonly>
-                <button type="button" class="copy-button" onclick="copyToClipboard('auto_id')">Copy</button>
-            </div>
+<div class="form-container" role="region" aria-labelledby="autoid-confirmation">
+    <div class="congratulations-message">
+        <h1>Congratulations, you've registered your AutoID!</h1>
+    </div>
+    
+    <div class="form-field">
+        <label for="auto_id">Auto ID:</label>
+        <div class="input-group">
+            <input type="text" id="auto_id" name="auto_id" value="{{ auto_id }}" readonly class="input-field">
+            <button type="button" class="copy-button" onclick="copyToClipboard('auto_id')">Copy</button>
         </div>
     </div>
-</main>
+
+    <div class="form-field">
+        <label for="private_key_hex">Private key:</label>
+        <div class="input-group">
+            <input type="text" id="private_key_hex" name="private_key_hex" value="{{ private_key_hex }}" readonly class="input-field">
+            <button type="button" class="copy-button" onclick="copyToClipboard('private_key_hex')">Copy</button>
+        </div>
+    </div>
+
+    <div class="form-field">
+        <label for="hashed_uuid">User Identifier:</label>
+        <div class="input-group">
+            <input type="text" id="hashed_uuid" name="hashed_uuid" value="{{ hashed_uuid }}" readonly class="input-field">
+            <button type="button" class="copy-button" onclick="copyToClipboard('hashed_uuid')">Copy</button>
+        </div>
+    </div>
+    
+    <div class="form-field">
+        <button type="submit" class="btn">Issue Identity</button>
+    </div>
+</div>
+
+<script src="/static/js/utils.js"></script>
 {% endblock %}

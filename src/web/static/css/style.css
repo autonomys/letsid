@@ -39,7 +39,7 @@ p {
     margin-bottom: 2em;
 }
 
-input[type="text"][readonly] {
+.input-field {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 14px;
@@ -47,11 +47,23 @@ input[type="text"][readonly] {
     font-size: 16px;
     line-height: 1.5;
     height: 40px;
-    margin-right: 10px;
-    background-color: #f3f3f3;
+    width: 280px;
+    background-color: #fff;
     color: #333;
-    cursor: not-allowed;
+    margin-right: 10px;
     flex-grow: 1;
+}
+
+.input-field[readonly] {
+    background-color: #f3f3f3;
+    cursor: not-allowed;
+}
+
+.input-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1em;
 }
 
 textarea {
@@ -219,7 +231,7 @@ textarea {
 
 .form-field {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     text-align: left;
     margin-bottom: 1em;
@@ -249,11 +261,11 @@ textarea {
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s, border-color 0.3s;
     font-size: 14px;
-    vertical-align: middle;
-    min-width: 60px;
+    line-height: 30px;
     height: 40px;
-    line-height: 30px; 
     margin-left: 10px;
+    right: 0;
+    text-decoration: none;
 }
 
 .copy-button:hover, .copy-button:focus {

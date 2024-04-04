@@ -1,32 +1,29 @@
-<!-- src/web/templates/issue_identity.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}LetsID - Issue Identity{% endblock %}
 
 {% block content %}
-<div class="form-container">
-    <!-- Issue identity heading -->
-    <h1>Issue Identity</h1>
-    <!-- Issue identity description -->
-    <p>Issue an identity by providing the necessary details:</p>
+<div class="centered-container">
+    <div class="form-container">
+        <h1>Issue Identity</h1>
+        <p>Issue an identity by providing the necessary details:</p>
+        <form action="/issue-identity" method="POST">
 
-    <!-- Issue identity form -->
-    <form action="/issue-identity" method="POST" class="registration-form">
-        <!-- X.509 Certificate input -->
-        <div class="form-field">
-            <label for="x509_certificate">X.509 Certificate:</label>
-            <input type="text" id="x509_certificate" name="x509_certificate" required>
-        </div>
-        <!-- User Identifier input -->
-        <div class="form-field">
-            <label for="user_identifier">User Identifier:</label>
-            <input type="text" id="user_identifier" name="user_identifier" required>
-        </div>
-        <!-- Submit button -->
-        <div class="form-field">
-            <button type="submit" class="btn">Issue Identity</button>
-        </div>
-    </form>
+            <div class="form-field">
+                <label for="user_private_key">Private key:</label>
+                <input type="text" id="user_private_key" name="user_private_key" value="{{ user_private_key }}" class="input-field">
+            </div>
+
+            <div class="form-field">
+                <label for="user_identifier">User Identifier:</label>
+                <input type="text" id="user_identifier" name="user_identifier" value="{{ user_identifier }}" class="input-field">
+            </div>
+
+            <div class="form-field">
+                <button type="submit" class="btn">Issue Identity</button>
+            </div>
+        </form>
+    </div>
 </div>
+
 {% endblock %}
