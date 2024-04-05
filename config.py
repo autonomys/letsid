@@ -4,11 +4,11 @@ import os
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'default_very_secret_key')
     FLASK_APP = os.environ.get('FLASK_APP')
-    FLASK_ENV = os.environ.get('FLASK_ENV')
+    FLASK_DEBUG = os.environ.get('FLASK_DEBUG')
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    FLASK_ENV = 'development'
+    FLASK_DEBUG = 'development'
 
 class TestingConfig(Config):
     TESTING = True

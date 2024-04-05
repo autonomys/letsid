@@ -59,6 +59,29 @@ p {
     cursor: not-allowed;
 }
 
+.input-textarea {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 14px;
+    box-sizing: border-box;
+    font-size: 16px;
+    line-height: 1.5;
+    width: 280px;
+    background-color: #fff;
+    color: #333;
+    margin-right: 10px;
+    flex-grow: 1;
+    height: auto;
+    min-height: 140px;
+    overflow-y: auto;
+    resize: vertical;
+}
+
+.input-textarea[readonly] {
+    background-color: #f3f3f3;
+    cursor: not-allowed;
+}
+
 .input-group {
     display: flex;
     justify-content: space-between;

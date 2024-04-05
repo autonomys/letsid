@@ -56,7 +56,7 @@ def finalize_registration(provider, user_info_endpoint):
         key_pair = auto_identity.generate_ed25519_key_pair()
         ed25519_private_key, ed25519_public_key = key_pair
         
-        private_hex = auto_identity.key_to_hex(ed25519_private_key)
+        pem = auto_identity.key_to_pem(ed25519_private_key)
         
         concatenated_uuid = provider + user_info['id']
         hashed_uuid = hashlib.sha3_256(concatenated_uuid.encode()).hexdigest()
@@ -67,8 +67,7 @@ def finalize_registration(provider, user_info_endpoint):
 
         registration_data = {
             'hashed_uuid': hashed_uuid,
-            'public_key_hex': ed25519_public_key,
-            'private_key_hex': private_hex,
+            'keyring': pem,
             'auto_id': serial_number,
             'user_info': user_info
         }
@@ -99,22 +98,19 @@ def finalize_registration_discord():
 def issue_identity_route():
     """Route for issuing identity."""
     if request.method == 'POST':
-        user_private_key_hex = request.form.get('user_private_key')
-        print('user_private_key_hex', user_private_key_hex)
         user_identifier = request.form.get('user_identifier')
         print('user_identifier', user_identifier)
+        user_keyring = request.form.get('user_keyring')
+        print('user_keyring', user_keyring)
         
-        key_pair = auto_identity.Keypair.create_from_private_key(user_private_key_hex)
-        ed25519_private_key, ed25519_public_key = key_pair
-        print('ed25519_private_key', ed25519_private_key)
-        print('ed25519_public_key', ed25519_public_key)
+        private_key = auto_identity.pem_to_private_key(user_keyring)
+        print('private_key', private_key)
         
-        # Change for this when we can rebuild the private key 
-        # csr = auto_identity.create_csr(user_identifier, ed25519_private_key)
+        csr = auto_identity.create_csr(user_identifier, private_key)
         
-        csr = auto_identity.self_issue_certificate(user_identifier, ed25519_private_key)
+        #csr = auto_identity.self_issue_certificate(user_identifier, private_key)
         
-        certificate = auto_identity.issue_certificate(csr, ed25519_private_key)
+        certificate = auto_identity.issue_certificate(csr, private_key)
         print('certificate', certificate)
         
         serial_number = certificate.serial_number
@@ -122,11 +118,5 @@ def issue_identity_route():
         certificate_data = {
             'auto_id': serial_number,
         }
-        
-        # if issue_identity("x509_placeholder", user_identifier):
-        #     flash('Identity issued successfully.')
-        #     return redirect(url_for('index'))
-        # else:
-        #     flash('Failed to issue identity. Please try again.')
-
+        return render_template('show_auto_id.html', **certificate_data)
     return render_template('issue_identity.html')

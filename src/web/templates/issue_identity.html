@@ -10,13 +10,13 @@
         <form action="/issue-identity" method="POST">
 
             <div class="form-field">
-                <label for="user_private_key">Private key:</label>
-                <input type="text" id="user_private_key" name="user_private_key" value="{{ user_private_key }}" class="input-field">
+                <label for="user_identifier">User Identifier:</label>
+                <input type="text" id="user_identifier" name="user_identifier" class="input-field">
             </div>
 
             <div class="form-field">
-                <label for="user_identifier">User Identifier:</label>
-                <input type="text" id="user_identifier" name="user_identifier" value="{{ user_identifier }}" class="input-field">
+                <label for="user_keyring">Keyring:</label>
+                <textarea id="user_keyring" name="user_keyring" class="input-textarea"></textarea>
             </div>
 
             <div class="form-field">

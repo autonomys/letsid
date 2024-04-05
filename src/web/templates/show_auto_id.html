@@ -19,20 +19,21 @@
     </div>
 
     <div class="form-field">
-        <label for="private_key_hex">Private key:</label>
-        <div class="input-group">
-            <input type="text" id="private_key_hex" name="private_key_hex" value="{{ private_key_hex }}" readonly class="input-field">
-            <button type="button" class="copy-button" onclick="copyToClipboard('private_key_hex')">Copy</button>
-        </div>
-    </div>
-
-    <div class="form-field">
         <label for="hashed_uuid">User Identifier:</label>
         <div class="input-group">
             <input type="text" id="hashed_uuid" name="hashed_uuid" value="{{ hashed_uuid }}" readonly class="input-field">
             <button type="button" class="copy-button" onclick="copyToClipboard('hashed_uuid')">Copy</button>
         </div>
     </div>
+
+    <div class="form-field">
+        <label for="keyring">Keyring:</label>
+        <div class="input-group">
+            <textarea id="keyring" name="keyring" readonly class="input-textarea">{{ keyring }}</textarea>
+            <button type="button" class="copy-button" onclick="copyToClipboard('keyring')">Copy</button>
+        </div>
+    </div>
+    
     
     <div class="form-field">
         <button type="submit" class="btn">Issue Identity</button>
