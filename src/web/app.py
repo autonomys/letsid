@@ -10,8 +10,7 @@ from flask_dance.contrib.github import github
 from flask_dance.contrib.discord import discord
 from src.web.authorize import authorize_bp
 import auto_identity
-import jwt
-
+        
 # Load environment variables
 load_dotenv()
 
@@ -26,16 +25,6 @@ app.register_blueprint(authorize_bp, url_prefix='/authorize')
 
 # Secure secret key setup
 app.secret_key = os.getenv('SECRET_KEY', os.urandom(24))
-
-# JWT token creation with user ID and expiration
-def create_jwt_token(user_id, secret_key):
-    expiration_time = timedelta(minutes=5)
-    payload = {
-        'exp': datetime.utcnow() + expiration_time,
-        'iat': datetime.utcnow(),
-        'sub': str(user_id),
-    }
-    return jwt.encode(payload, secret_key, algorithm='HS256')
 
 # Main route
 @app.route('/')
@@ -63,29 +52,23 @@ def finalize_registration(provider, user_info_endpoint):
     response = provider_auth.get(user_info_endpoint)
     if response.ok:
         user_info = response.json()
-        token = create_jwt_token(user_info['id'], app.secret_key)
 
         key_pair = auto_identity.generate_ed25519_key_pair()
         ed25519_private_key, ed25519_public_key = key_pair
         
-        print('ed25519_private_key', ed25519_private_key)
-        
         private_hex = auto_identity.key_to_hex(ed25519_private_key)
-        
-        print('private_hex', private_hex)
-       
         
         concatenated_uuid = provider + user_info['id']
         hashed_uuid = hashlib.sha3_256(concatenated_uuid.encode()).hexdigest()
         
-        certificate = self_issue_certificate(hashed_uuid, ed25519_private_key)
+        certificate = auto_identity.self_issue_certificate(hashed_uuid, ed25519_private_key)
         
         serial_number = certificate.serial_number
 
         registration_data = {
             'hashed_uuid': hashed_uuid,
             'public_key_hex': ed25519_public_key,
-            'private_key_hex': ed25519_private_key,
+            'private_key_hex': private_hex,
             'auto_id': serial_number,
             'user_info': user_info
         }
@@ -121,13 +104,24 @@ def issue_identity_route():
         user_identifier = request.form.get('user_identifier')
         print('user_identifier', user_identifier)
         
-        key_pair = auto_identity.generate_ed25519_key_pair()
+        key_pair = auto_identity.Keypair.create_from_private_key(user_private_key_hex)
         ed25519_private_key, ed25519_public_key = key_pair
+        print('ed25519_private_key', ed25519_private_key)
+        print('ed25519_public_key', ed25519_public_key)
         
-        print('test', ed25519_private_key.hex())
+        # Change for this when we can rebuild the private key 
+        # csr = auto_identity.create_csr(user_identifier, ed25519_private_key)
         
-        parent_certificate = auto_identity.self_issue_certificate(user_identifier, ed25519_private_key)
-        certificate = auto_identity.issue_certificate(parent_certificate, ed25519_private_key)
+        csr = auto_identity.self_issue_certificate(user_identifier, ed25519_private_key)
+        
+        certificate = auto_identity.issue_certificate(csr, ed25519_private_key)
+        print('certificate', certificate)
+        
+        serial_number = certificate.serial_number
+
+        certificate_data = {
+            'auto_id': serial_number,
+        }
         
         # if issue_identity("x509_placeholder", user_identifier):
         #     flash('Identity issued successfully.')
