@@ -58,16 +58,13 @@ def finalize_registration(provider, user_info_endpoint):
         
         user_keyring = auto_identity.key_to_pem(ed25519_private_key).decode()
         
-        concatenated_uuid = provider + user_info['id']
-        user_identifier = hashlib.sha3_256(concatenated_uuid.encode()).hexdigest()
+        concatenated_uuid = os.getenv('LETSID_SERVER_AUTO_ID') + provider + user_info['id']
+        auto_id = hashlib.sha3_256(concatenated_uuid.encode()).hexdigest()
         
-        certificate = auto_identity.self_issue_certificate(user_identifier, ed25519_private_key)
-        
-        auto_id = certificate.serial_number
+        auto_identity.self_issue_certificate(auto_id, ed25519_private_key)
 
         registration_data = {
             'auto_id': auto_id,
-            'user_identifier': user_identifier,
             'user_keyring': user_keyring,
         }
 
@@ -97,27 +94,17 @@ def finalize_registration_discord():
 def issue_identity_route():
     """Route for issuing identity."""
     if request.method == 'POST':
-        user_identifier = request.form.get('user_identifier')
-        print('user_identifier', user_identifier)
-        user_keyring = request.form.get('user_keyring')
-        print('user_keyring', user_keyring)
-        user_keyring = user_keyring.encode()
-        print('user_keyring', user_keyring)
+        auto_id = hashlib.sha3_256((request.form.get('user_identifier') + os.urandom(32).hex()).encode()).hexdigest()
         
+        user_keyring = request.form.get('user_keyring').encode()
         private_key = auto_identity.pem_to_private_key(user_keyring)
-        print('private_key', private_key)
         
-        csr = auto_identity.create_csr(user_identifier, private_key)
-        
-        certificate = auto_identity.issue_certificate(csr, private_key)
-        print('certificate', certificate)
-        
-        auto_id = certificate.serial_number
+        csr = auto_identity.create_csr(auto_id, private_key)
+        auto_identity.issue_certificate(csr, private_key)
 
         certificate_data = {
             'auto_id': auto_id,
-            'user_identifier': user_identifier,
-            'user_keyring': user_keyring,
+            'user_keyring': user_keyring.decode(),
         }
         return render_template('show_auto_id.html', **certificate_data)
     return render_template('issue_identity.html')

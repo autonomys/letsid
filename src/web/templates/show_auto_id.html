@@ -19,14 +19,6 @@
     </div>
 
     <div class="form-field">
-        <label for="user_identifier">User Identifier:</label>
-        <div class="input-group">
-            <input type="text" id="user_identifier" name="user_identifier" value="{{ user_identifier }}" readonly class="input-field">
-            <button type="button" class="copy-button" onclick="copyToClipboard('user_identifier')">Copy</button>
-        </div>
-    </div>
-
-    <div class="form-field">
         <label for="user_keyring">Keyring:</label>
         <div class="input-group">
             <textarea id="user_keyring" name="user_keyring" readonly class="input-textarea">{{ user_keyring }}</textarea>
@@ -36,7 +28,7 @@
     
     
     <div class="form-field">
-        <button type="submit" class="btn">Issue Identity</button>
+        <a href="/issue-identity" class="btn btn-blue">Issue Identity</a>
     </div>
 </div>
 

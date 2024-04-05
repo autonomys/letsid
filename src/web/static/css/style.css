@@ -120,6 +120,9 @@ textarea {
     transition: background-color 0.3s;
     font-weight: bold;
     text-decoration: none;
+    justify-content: center;
+    align-items: center;
+    display: flex;
 }
 
 .btn:hover, .btn:focus, input[type="submit"]:hover {
