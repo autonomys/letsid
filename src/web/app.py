@@ -56,20 +56,19 @@ def finalize_registration(provider, user_info_endpoint):
         key_pair = auto_identity.generate_ed25519_key_pair()
         ed25519_private_key, ed25519_public_key = key_pair
         
-        pem = auto_identity.key_to_pem(ed25519_private_key)
+        user_keyring = auto_identity.key_to_pem(ed25519_private_key).decode()
         
         concatenated_uuid = provider + user_info['id']
-        hashed_uuid = hashlib.sha3_256(concatenated_uuid.encode()).hexdigest()
+        user_identifier = hashlib.sha3_256(concatenated_uuid.encode()).hexdigest()
         
-        certificate = auto_identity.self_issue_certificate(hashed_uuid, ed25519_private_key)
+        certificate = auto_identity.self_issue_certificate(user_identifier, ed25519_private_key)
         
-        serial_number = certificate.serial_number
+        auto_id = certificate.serial_number
 
         registration_data = {
-            'hashed_uuid': hashed_uuid,
-            'keyring': pem,
-            'auto_id': serial_number,
-            'user_info': user_info
+            'auto_id': auto_id,
+            'user_identifier': user_identifier,
+            'user_keyring': user_keyring,
         }
 
         return render_template('show_auto_id.html', **registration_data)
@@ -102,21 +101,23 @@ def issue_identity_route():
         print('user_identifier', user_identifier)
         user_keyring = request.form.get('user_keyring')
         print('user_keyring', user_keyring)
+        user_keyring = user_keyring.encode()
+        print('user_keyring', user_keyring)
         
         private_key = auto_identity.pem_to_private_key(user_keyring)
         print('private_key', private_key)
         
         csr = auto_identity.create_csr(user_identifier, private_key)
         
-        #csr = auto_identity.self_issue_certificate(user_identifier, private_key)
-        
         certificate = auto_identity.issue_certificate(csr, private_key)
         print('certificate', certificate)
         
-        serial_number = certificate.serial_number
+        auto_id = certificate.serial_number
 
         certificate_data = {
-            'auto_id': serial_number,
+            'auto_id': auto_id,
+            'user_identifier': user_identifier,
+            'user_keyring': user_keyring,
         }
         return render_template('show_auto_id.html', **certificate_data)
     return render_template('issue_identity.html')

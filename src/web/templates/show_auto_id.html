@@ -19,18 +19,18 @@
     </div>
 
     <div class="form-field">
-        <label for="hashed_uuid">User Identifier:</label>
+        <label for="user_identifier">User Identifier:</label>
         <div class="input-group">
-            <input type="text" id="hashed_uuid" name="hashed_uuid" value="{{ hashed_uuid }}" readonly class="input-field">
-            <button type="button" class="copy-button" onclick="copyToClipboard('hashed_uuid')">Copy</button>
+            <input type="text" id="user_identifier" name="user_identifier" value="{{ user_identifier }}" readonly class="input-field">
+            <button type="button" class="copy-button" onclick="copyToClipboard('user_identifier')">Copy</button>
         </div>
     </div>
 
     <div class="form-field">
-        <label for="keyring">Keyring:</label>
+        <label for="user_keyring">Keyring:</label>
         <div class="input-group">
-            <textarea id="keyring" name="keyring" readonly class="input-textarea">{{ keyring }}</textarea>
-            <button type="button" class="copy-button" onclick="copyToClipboard('keyring')">Copy</button>
+            <textarea id="user_keyring" name="user_keyring" readonly class="input-textarea">{{ user_keyring }}</textarea>
+            <button type="button" class="copy-button" onclick="copyToClipboard('user_keyring')">Copy</button>
         </div>
     </div>
     
