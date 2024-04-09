@@ -43,63 +43,85 @@ def register():
     """Render the authorize template."""
     return render_template('authorize.html')
 
-# Simplified OAuth registration finalization
+# Route for self registration
 def finalize_registration(provider, user_info_endpoint):
     """Finalize OAuth registration."""
-    provider_auth = globals().get(provider)
-    if not provider_auth or not provider_auth.authorized:
-        return redirect(url_for('authorize.authorize', provider_name=provider))
-    response = provider_auth.get(user_info_endpoint)
-    if response.ok:
-        user_info = response.json()
-
-        key_pair = generate_ed25519_key_pair()
-        ed25519_private_key, ed25519_public_key = key_pair
+    try:
+        provider_auth = globals().get(provider)
+        if not provider_auth or not provider_auth.authorized:
+            return redirect(url_for('authorize.authorize', provider_name=provider))
         
-        user_keyring = key_to_pem(ed25519_private_key).decode()
-        
-        concatenated_uuid = os.getenv('LETSID_SERVER_AUTO_ID') + provider + user_info['id']
-        auto_id = hashlib.sha3_256(concatenated_uuid.encode()).hexdigest()
-        
-        certificate = CertificateManager(None, ed25519_private_key).self_issue_certificate(auto_id)
+        response = provider_auth.get(user_info_endpoint)
+        if response.ok:
+            user_info = response.json()
 
-        registration_data = {
-            'auto_id': auto_id,
-            'user_keyring': user_keyring,
-            'certificate': CertificateManager.certificate_to_pem(certificate).decode(),
-        }
+            key_pair = generate_ed25519_key_pair()
+            ed25519_private_key, _ = key_pair
+            
+            user_keyring = key_to_pem(ed25519_private_key).decode()
+            
+            concatenated_uuid = os.getenv('LETSID_SERVER_AUTO_ID') + provider + user_info['id']
+            auto_id = hashlib.sha3_256(concatenated_uuid.encode()).hexdigest()
+            
+            certificate = CertificateManager(None, ed25519_private_key).self_issue_certificate(auto_id)
 
-        return render_template('show_auto_id.html', **registration_data)
-    else:
-        flash(f"Failed to fetch user details from {provider.capitalize()}.")
-        return redirect(url_for('authorize.authorize', provider_name=provider))
+            registration_data = {
+                'auto_id': auto_id,
+                'user_keyring': user_keyring,
+                'certificate': CertificateManager.certificate_to_pem(certificate).decode(),
+            }
+
+            return render_template('show_auto_id.html', **registration_data)
+        else:
+            flash(f"Failed to fetch user details from {provider.capitalize()}.")
+            return redirect(url_for('authorize.authorize', provider_name=provider))
+            
+    except Exception as e:
+        # Log the error for debugging purposes
+        print(f"An error occurred during registration finalization: {e}")
+        
+        # Optionally, flash a message to the user
+        flash("An unexpected error occurred. Please try again later.")
+
+        # Render the error template with the error message
+        return render_template('error.html', error_message=str(e))
 
 # Route for identity issuance
 @app.route('/issue-identity', methods=['GET', 'POST'])
 def issue_identity_route():
     """Route for issuing identity."""
-    if request.method == 'POST':
-        auto_id = hashlib.sha3_256((request.form.get('user_identifier') + os.urandom(32).hex()).encode()).hexdigest()
-        certificate = CertificateManager.pem_to_certificate(request.form.get('user_certificate').encode())
-        print('certificate', certificate)
-        
-        user_keyring = request.form.get('user_keyring').encode()
-        print('user_keyring', user_keyring)
-        private_key = pem_to_private_key(user_keyring)
-        
-        print('private_key', private_key)
-        
-        certificate = CertificateManager(certificate, private_key)
-        csr = certificate.create_csr(auto_id)
-        certificate = certificate.issue_certificate(csr)
+    try:
+        if request.method == 'POST':
+            auto_id = hashlib.sha3_256((request.form.get('user_identifier') + os.urandom(32).hex()).encode()).hexdigest()
+            certificate = CertificateManager.pem_to_certificate(request.form.get('user_certificate').encode())
+            print('certificate', certificate)
 
-        certificate_data = {
-            'auto_id': auto_id,
-            'user_keyring': user_keyring.decode(),
-            'certificate': CertificateManager.certificate_to_pem(certificate).decode(),
-        }
-        return render_template('show_auto_id.html', **certificate_data)
-    return render_template('issue_identity.html')
+            user_keyring = request.form.get('user_keyring').encode()
+            print('user_keyring', user_keyring)
+            private_key = pem_to_private_key(user_keyring)
+
+            print('private_key', private_key)
+
+            certificate = CertificateManager(certificate, private_key)
+            csr = certificate.create_csr(auto_id)
+            certificate = certificate.issue_certificate(csr)
+
+            certificate_data = {
+                'auto_id': auto_id,
+                'user_keyring': user_keyring.decode(),
+                'certificate': CertificateManager.certificate_to_pem(certificate).decode(),
+            }
+            return render_template('show_auto_id.html', **certificate_data)
+        
+        # If it's not a POST request, just show the identity issue form
+        return render_template('issue_identity.html')
+
+    except Exception as e:
+        # Log the error for debugging purposes
+        print(f"An error occurred: {e}")
+
+        # Render the error template with the error message
+        return render_template('error.html', error_message=str(e))
 
 # Provider-specific routes for finalizing registration
 @app.route('/finalize-registration/google')

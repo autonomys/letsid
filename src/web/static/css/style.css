@@ -339,6 +339,40 @@ textarea {
     padding: 0;
 }
 
+.error-container {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 14px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+    margin: 150px auto 0;
+    text-align: center;
+}
+
+.error-container h1 {
+    color: #ff6b6b;
+    font-size: 32px;
+    margin-bottom: 24px;
+}
+
+.error-container p {
+    color: #333;
+    font-size: 18px;
+    margin-bottom: 32px;
+}
+
+.btn-outline-blue {
+    background-color: transparent;
+    color: #007bff;
+    border: 2px solid #007bff;
+    margin-top: 10px;
+}
+
+.btn-outline-blue:hover, .btn-outline-blue:focus {
+    background-color: #e7e7e7;
+}
+
 @-webkit-keyframes fadein {
     from {bottom: 0; opacity: 0;} 
     to {bottom: 30px; opacity: 1;}

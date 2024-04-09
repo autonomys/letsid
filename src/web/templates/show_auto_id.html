@@ -10,6 +10,7 @@
         <h1>Congratulations, you've registered your AutoID!</h1>
     </div>
     
+    <!-- Fields streamlined for clarity and functionality -->
     <div class="form-field">
         <label for="auto_id">Auto ID:</label>
         <div class="input-group">
@@ -17,7 +18,7 @@
             <button type="button" class="copy-button" onclick="copyToClipboard('auto_id')">Copy</button>
         </div>
     </div>
-
+    <!-- Repeating structure for Keyring and Certificate with clear, minimalistic labeling -->
     <div class="form-field">
         <label for="user_keyring">Keyring:</label>
         <div class="input-group">
@@ -25,7 +26,6 @@
             <button type="button" class="copy-button" onclick="copyToClipboard('user_keyring')">Copy</button>
         </div>
     </div>
-
     <div class="form-field">
         <label for="certificate">Certificate:</label>
         <div class="input-group">
@@ -33,12 +33,31 @@
             <button type="button" class="copy-button" onclick="copyToClipboard('certificate')">Copy</button>
         </div>
     </div>
-    
-    
     <div class="form-field">
         <a href="/issue-identity" class="btn btn-blue">Issue Identity</a>
     </div>
 </div>
 
 <script src="/static/js/utils.js"></script>
+<script>
+    function storeInLocalStorage(key, value) {
+        // Simplifying data storage by directly storing without parsing, assuming direct compatibility
+        localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    window.onload = function() {
+        // Optimized logging and local storage handling for clarity and efficiency
+        var autoID = '{{ auto_id|tojson|safe }}';
+        var userKeyring = '{{ user_keyring|tojson|safe }}';
+        var certificate = '{{ certificate|tojson|safe }}';
+        
+        if (userKeyring && certificate) {
+            storeInLocalStorage('autoID', autoID);
+            storeInLocalStorage('user_keyring', userKeyring);
+            storeInLocalStorage('certificate', certificate);
+        } else {
+            console.log("Credentials not found.");
+        }
+    };
+</script>
 {% endblock %}

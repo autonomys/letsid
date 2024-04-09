@@ -1,0 +1,13 @@
+<!-- src/web/templates/error.html -->
+{% extends 'base.html' %}
+
+{% block title %}Error - AutoID{% endblock %}
+
+{% block content %}
+<div class="error-container" role="alert">
+    <h1>Oops! We hit a snag.</h1>
+    <p>Sorry, something went wrong on our end. Please try again later. If you continue to experience this issue, please reach out to our support team.</p>
+    <a href="/" class="btn btn-blue">Go to Home</a>
+    <a href="javascript:history.back()" class="btn btn-outline-blue">Go Back</a>
+</div>
+{% endblock %}

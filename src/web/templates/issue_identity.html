@@ -31,4 +31,27 @@
     </div>
 </div>
 
+<script>
+    function unescapeData(data) {
+        // Remove leading and trailing double quotes
+        var trimmedData = data.startsWith('"') && data.endsWith('"') ? data.slice(1, -1) : data;
+        // Unescape any escaped slashes and quotes
+        var unescapedData = trimmedData.replace(/\\r\\n/g, "\n").replace(/\\r/g, "\n").replace(/\\n/g, "\n").replace(/\\"/g, '').replace(/\\\\/g, '\\');
+        return unescapedData;
+    }
+
+    window.onload = function() {
+        // Check local storage and pre-populate the form
+        var autoID = localStorage.getItem('autoID');
+        var userKeyring = localStorage.getItem('user_keyring');
+        var certificate = localStorage.getItem('certificate');
+    
+        if (autoID)
+            document.getElementById('user_identifier').value = unescapeData(autoID);
+        if (userKeyring)
+            document.getElementById('user_keyring').value = unescapeData(userKeyring);
+        if (certificate)
+            document.getElementById('user_certificate').value = unescapeData(certificate);
+    };
+</script>
 {% endblock %}
