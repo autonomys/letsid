@@ -72,7 +72,7 @@ p {
     margin-right: 10px;
     flex-grow: 1;
     height: auto;
-    min-height: 140px;
+    min-height: 150px;
     overflow-y: auto;
     resize: vertical;
 }
