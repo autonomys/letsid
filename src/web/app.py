@@ -9,7 +9,7 @@ from flask_dance.contrib.google import google
 from flask_dance.contrib.github import github
 from flask_dance.contrib.discord import discord
 from src.web.authorize import authorize_bp
-import auto_identity
+from auto_identity import CertificateManager, generate_ed25519_key_pair, key_to_pem, pem_to_private_key
         
 # Load environment variables
 load_dotenv()
@@ -53,15 +53,15 @@ def finalize_registration(provider, user_info_endpoint):
     if response.ok:
         user_info = response.json()
 
-        key_pair = auto_identity.generate_ed25519_key_pair()
+        key_pair = generate_ed25519_key_pair()
         ed25519_private_key, ed25519_public_key = key_pair
         
-        user_keyring = auto_identity.key_to_pem(ed25519_private_key).decode()
+        user_keyring = key_to_pem(ed25519_private_key).decode()
         
         concatenated_uuid = os.getenv('LETSID_SERVER_AUTO_ID') + provider + user_info['id']
         auto_id = hashlib.sha3_256(concatenated_uuid.encode()).hexdigest()
         
-        auto_identity.self_issue_certificate(auto_id, ed25519_private_key)
+        CertificateManager(None, ed25519_private_key).self_issue_certificate(auto_id)
 
         registration_data = {
             'auto_id': auto_id,
@@ -96,11 +96,15 @@ def issue_identity_route():
     if request.method == 'POST':
         auto_id = hashlib.sha3_256((request.form.get('user_identifier') + os.urandom(32).hex()).encode()).hexdigest()
         
-        user_keyring = request.form.get('user_keyring').encode()
-        private_key = auto_identity.pem_to_private_key(user_keyring)
+        user_keyring = request.form.get('user_keyring')
+        print('user_keyring', user_keyring)
+        private_key = pem_to_private_key(user_keyring)
         
-        csr = auto_identity.create_csr(auto_id, private_key)
-        auto_identity.issue_certificate(csr, private_key)
+        print('private_key', private_key)
+        
+        certificate = CertificateManager(None, private_key)
+        csr = certificate.create_csr(auto_id)
+        certificate.issue_certificate(csr)
 
         certificate_data = {
             'auto_id': auto_id,
