@@ -12,7 +12,7 @@ setup(
     url='https://github.com/subspace/letsid',
     packages=find_packages(),
     install_requires=[
-        'auto-sdk>=0.1.4',
+        'auto-sdk>=0.1.6',
         'Flask>=1.1.2',
         'Flask-Cors>=3.0.10',
         'Flask-Dance>=3.0.0',

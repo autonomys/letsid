@@ -46,4 +46,4 @@ htmlcov/
 # Environments variables
 .env
 env
-test2
+venv
