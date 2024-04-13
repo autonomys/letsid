@@ -173,25 +173,65 @@ def finalize_registration_discord():
     """Finalize registration with Discord OAuth."""
     return finalize_registration('discord', "/api/users/@me")
 
-@app.route('/verify/<auto_id>')
-def verify_auto_id(auto_id):
+# @app.route('/verify/<auto_id>')
+# def verify_auto_id(auto_id):
+#     certificates = load_certificates('certificates.json')
+#     for entry in certificates:
+#         if entry['auto_id'] == auto_id:
+#             certificate = CertificateManager.pem_to_certificate(entry['certificate'].encode())
+#             current_utc = datetime.utcnow()
+#             start_at = certificate.not_valid_before_utc.replace(tzinfo=None)
+#             expired_at = certificate.not_valid_after_utc.replace(tzinfo=None)
+#             is_valid = is_certificate_valid(entry['certificate']) and start_at < current_utc < expired_at
+#             data = {
+#                 'auto_id': auto_id,
+#                 'is_valid': is_valid,
+#                 'subject': certificate.subject.rfc4514_string(),
+#                 'issuer': certificate.issuer.rfc4514_string().split('=')[1],
+#                 'sn': certificate.serial_number,
+#                 'start_at': start_at,
+#                 'expired_at': expired_at
+#             }
+#             if request.accept_mimetypes.accept_html:
+#                 return render_template('verify.html', **data)
+#             return jsonify({'exists': True, 'is_valid': is_valid})
+#     if request.accept_mimetypes.accept_html:
+#         return render_template('verify.html', auto_id=auto_id, certificate=None, is_valid=False)
+#     return jsonify({'exists': False, 'is_valid': False})
+
+def verify_certificate(auto_id):
     certificates = load_certificates('certificates.json')
     for entry in certificates:
         if entry['auto_id'] == auto_id:
-            is_valid = is_certificate_valid(entry['certificate'])
             certificate = CertificateManager.pem_to_certificate(entry['certificate'].encode())
-            data = {
+            current_utc = datetime.utcnow()
+            start_at = certificate.not_valid_before_utc.replace(tzinfo=None)
+            expired_at = certificate.not_valid_after_utc.replace(tzinfo=None)
+            is_valid = is_certificate_valid(entry['certificate']) and start_at < current_utc < expired_at
+            return {
                 'auto_id': auto_id,
-                'is_valid': is_valid,
+                'exists': True,
+                'valid': is_valid,
                 'subject': certificate.subject.rfc4514_string(),
                 'issuer': certificate.issuer.rfc4514_string().split('=')[1],
                 'sn': certificate.serial_number,
-                'start_at': certificate.not_valid_before_utc,
-                'expired_at': certificate.not_valid_after_utc
+                'start_at': start_at,
+                'expired_at': expired_at
             }
-            if request.accept_mimetypes.accept_html:
-                return render_template('verify.html', **data)
-            return jsonify({'exists': True, 'is_valid': is_valid})
+    return {
+        'auto_id': auto_id,
+        'exists': False,
+        'valid': False
+    }
+
+@app.route('/verify/<auto_id>')
+def verify_auto_id(auto_id):
+    result = verify_certificate(auto_id)
     if request.accept_mimetypes.accept_html:
-        return render_template('verify.html', auto_id=auto_id, certificate=None, is_valid=False)
-    return jsonify({'exists': False, 'is_valid': False})
+        return render_template('verify.html', **result)
+    return jsonify(result)
+
+@app.route('/api/verify/<auto_id>', methods=['GET'])
+def api_verify_auto_id(auto_id):
+    result = verify_certificate(auto_id)
+    return jsonify(result)

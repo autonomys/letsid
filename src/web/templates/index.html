@@ -18,6 +18,17 @@
             <a href="/register" class="btn btn-blue">Register Myself</a>
             <a href="/issue-identity" class="btn btn-blue">Issue Identity</a>
         </div>
+
+        <div class="verification-form">
+            <h2>Verify Identity</h2>
+            <form method="GET" class="verify-form" id="verify-form">
+                <div class="form-field">
+                    <input type="text" id="auto_id" name="auto_id" placeholder="Enter a Auto ID" class="input-field" required>
+                    <button type="submit" class="btn">Verify</button>
+                </div>
+            </form>
+        </div>
     </div>
+    <script src="{{ url_for('static', filename='js/verify.js') }}"></script>
 </body>
 </html>

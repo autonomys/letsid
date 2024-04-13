@@ -7,7 +7,7 @@
 {% block content %}
 <div class="centered-container">
     <div class="form-container">
-        {% if auto_id and is_valid is not none %}
+        {% if exists and exists is not false %}
             <div class="congratulations-message">
                 <h1>AutoID Verification</h1>
                 <p class="break-word">Certificate Details for AutoID: {{ auto_id }}</p>
@@ -35,8 +35,8 @@
                 <div class="form-field">
                     <label>Status:</label>
                     <p>
-                        <span class="{{ 'valid-status' if is_valid else 'invalid-status' }}">
-                            {{ 'Valid' if is_valid else 'Invalid' }}
+                        <span class="{{ 'valid-status' if valid else 'invalid-status' }}">
+                            {{ 'Valid' if valid else 'Invalid' }}
                         </span>
                     </p>
                 </div>
@@ -44,7 +44,7 @@
         {% else %}
             <div class="error-container">
                 <h1>No Certificate Found</h1>
-                <p>No certificate could be found for AutoID: {{ auto_id }}</p>
+                <p class="break-word">No certificate could be found for this Auto ID: {{ auto_id }}</p>
             </div>
         {% endif %}
         <div class="button-container">

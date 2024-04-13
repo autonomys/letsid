@@ -40,18 +40,19 @@ p {
 }
 
 .input-field {
-    padding: 10px;
+    padding: 15px;
     border: 1px solid #ddd;
     border-radius: 14px;
     box-sizing: border-box;
     font-size: 16px;
     line-height: 1.5;
-    height: 40px;
-    width: 280px;
+    height: 50px;
+    width: 100%;
     background-color: #fff;
     color: #333;
     margin-right: 10px;
     flex-grow: 1;
+    margin-bottom: 1em;
 }
 
 .input-field[readonly] {
@@ -66,7 +67,7 @@ p {
     box-sizing: border-box;
     font-size: 16px;
     line-height: 1.5;
-    width: 280px;
+    width: 100%;
     background-color: #fff;
     color: #333;
     margin-right: 10px;
@@ -87,6 +88,7 @@ p {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1em;
+    width: 100%
 }
 
 textarea {
@@ -135,7 +137,7 @@ textarea {
 
 .centered-container {
     width: 100%;
-    max-width: 800px;
+    max-width: 600px;
     margin: 0 auto;
     padding-top: 150px;
     text-align: center;
@@ -185,7 +187,7 @@ textarea {
     padding: 40px;
     border-radius: 14px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
+    max-width: 600px;
     width: 100%;
     margin: 80px auto 0;
 }
@@ -370,6 +372,17 @@ textarea {
 
 .btn-outline-blue:hover, .btn-outline-blue:focus {
     background-color: #e7e7e7;
+}
+
+.verification-form {
+    max-width: 100%;
+    margin: auto;
+}
+
+.verify-form .form-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .valid-status {
