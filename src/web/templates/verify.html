@@ -1,0 +1,55 @@
+<!-- src/web/templates/verify.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Verify AutoID{% endblock %}
+
+{% block content %}
+<div class="centered-container">
+    <div class="form-container">
+        {% if auto_id and is_valid is not none %}
+            <div class="congratulations-message">
+                <h1>AutoID Verification</h1>
+                <p class="break-word">Certificate Details for AutoID: {{ auto_id }}</p>
+            </div>
+            <div class="certificate-details">
+                <div class="form-field">
+                    <label>Issuer:</label>
+                    <p>
+                        {% set truncated_issuer = issuer[:12] + '...' + issuer[-12:] %}
+                        <a href="/verify/{{ issuer }}" class="btn btn-small">{{ truncated_issuer }}</a>
+                    </p>
+                </div>
+                <div class="form-field">
+                    <label>Serial Number:</label>
+                    <p>{{ sn }}</p>
+                </div>
+                <div class="form-field">
+                    <label>Valid From:</label>
+                    <p>{{ start_at }}</p>
+                </div>
+                <div class="form-field">
+                    <label>Valid Until:</label>
+                    <p>{{ expired_at }}</p>
+                </div>
+                <div class="form-field">
+                    <label>Status:</label>
+                    <p>
+                        <span class="{{ 'valid-status' if is_valid else 'invalid-status' }}">
+                            {{ 'Valid' if is_valid else 'Invalid' }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+        {% else %}
+            <div class="error-container">
+                <h1>No Certificate Found</h1>
+                <p>No certificate could be found for AutoID: {{ auto_id }}</p>
+            </div>
+        {% endif %}
+        <div class="button-container">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-blue">Return Home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
