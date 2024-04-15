@@ -1,4 +1,5 @@
 # src/web/app.py
+
 import os
 from datetime import datetime, timedelta
 import hashlib
@@ -12,19 +13,14 @@ from src.web.authorize import authorize_bp
 from auto_identity import CertificateManager, generate_ed25519_key_pair, key_to_pem, pem_to_private_key
 import json
 
-# Load environment variables
 load_dotenv()
-
 app = Flask(__name__)
 
-# Configure app based on environment
 config_class = ProductionConfig if os.getenv('FLASK_ENV') == 'production' else DevelopmentConfig
 app.config.from_object(config_class)
 
-# Register blueprints
 app.register_blueprint(authorize_bp, url_prefix='/authorize')
 
-# Secure secret key setup
 app.secret_key = os.getenv('SECRET_KEY', os.urandom(24))
 
 def load_certificates(file_path):
@@ -45,12 +41,6 @@ def save_to_json_file(data):
     with open('certificates.json', 'w') as file:
         json.dump(file_data, file, indent=4)
 
-def is_certificate_valid(certificate_pem):
-    # Placeholder for certificate validation logic
-    # You would need to implement actual certificate validation here
-    return True
-
-# Main route
 @app.route('/')
 def index():
     """Render the index template."""
@@ -61,13 +51,11 @@ def show_auto_id(user_auto_id):
     """Render the template to show auto ID."""
     return render_template('show_auto_id.html', auto_id=user_auto_id)
 
-# User registration route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     """Render the authorize template."""
     return render_template('authorize.html')
 
-# Route for self registration
 def finalize_registration(provider, user_info_endpoint):
     """Finalize OAuth registration."""
     try:
@@ -106,16 +94,9 @@ def finalize_registration(provider, user_info_endpoint):
             return redirect(url_for('authorize.authorize', provider_name=provider))
             
     except Exception as e:
-        # Log the error for debugging purposes
         print(f"An error occurred during registration finalization: {e}")
-        
-        # Optionally, flash a message to the user
-        flash("An unexpected error occurred. Please try again later.")
-
-        # Render the error template with the error message
         return render_template('error.html', error_message=str(e))
 
-# Route for identity issuance
 @app.route('/issue-identity', methods=['GET', 'POST'])
 def issue_identity_route():
     """Route for issuing identity."""
@@ -146,18 +127,12 @@ def issue_identity_route():
             })
         
             return render_template('show_auto_id.html', **certificate_data)
-        
-        # If it's not a POST request, just show the identity issue form
         return render_template('issue.html')
 
     except Exception as e:
-        # Log the error for debugging purposes
         print(f"An error occurred: {e}")
-
-        # Render the error template with the error message
         return render_template('error.html', error_message=str(e))
 
-# Provider-specific routes for finalizing registration
 @app.route('/finalize-registration/google')
 def finalize_registration_google():
     """Finalize registration with Google OAuth."""
@@ -173,32 +148,6 @@ def finalize_registration_discord():
     """Finalize registration with Discord OAuth."""
     return finalize_registration('discord', "/api/users/@me")
 
-# @app.route('/verify/<auto_id>')
-# def verify_auto_id(auto_id):
-#     certificates = load_certificates('certificates.json')
-#     for entry in certificates:
-#         if entry['auto_id'] == auto_id:
-#             certificate = CertificateManager.pem_to_certificate(entry['certificate'].encode())
-#             current_utc = datetime.utcnow()
-#             start_at = certificate.not_valid_before_utc.replace(tzinfo=None)
-#             expired_at = certificate.not_valid_after_utc.replace(tzinfo=None)
-#             is_valid = is_certificate_valid(entry['certificate']) and start_at < current_utc < expired_at
-#             data = {
-#                 'auto_id': auto_id,
-#                 'is_valid': is_valid,
-#                 'subject': certificate.subject.rfc4514_string(),
-#                 'issuer': certificate.issuer.rfc4514_string().split('=')[1],
-#                 'sn': certificate.serial_number,
-#                 'start_at': start_at,
-#                 'expired_at': expired_at
-#             }
-#             if request.accept_mimetypes.accept_html:
-#                 return render_template('verify.html', **data)
-#             return jsonify({'exists': True, 'is_valid': is_valid})
-#     if request.accept_mimetypes.accept_html:
-#         return render_template('verify.html', auto_id=auto_id, certificate=None, is_valid=False)
-#     return jsonify({'exists': False, 'is_valid': False})
-
 def verify_certificate(auto_id):
     certificates = load_certificates('certificates.json')
     for entry in certificates:
@@ -207,7 +156,7 @@ def verify_certificate(auto_id):
             current_utc = datetime.utcnow()
             start_at = certificate.not_valid_before_utc.replace(tzinfo=None)
             expired_at = certificate.not_valid_after_utc.replace(tzinfo=None)
-            is_valid = is_certificate_valid(entry['certificate']) and start_at < current_utc < expired_at
+            is_valid = start_at < current_utc < expired_at
             return {
                 'auto_id': auto_id,
                 'exists': True,
